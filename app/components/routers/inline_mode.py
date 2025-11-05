@@ -19,7 +19,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание на понедельник",
             description="Нажмите, чтобы отправить расписание на понедельник",
             caption="📆 <b>Расписание на понедельник</b>",
@@ -34,7 +34,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание на вторник",
             description="Нажмите, чтобы отправить расписание на вторник",
             caption="📆 <b>Расписание на вторник</b>",
@@ -49,7 +49,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание на среду",
             description="Нажмите, чтобы отправить расписание на среду",
             caption="📆 <b>Расписание на среду</b>",
@@ -64,7 +64,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание на четверг",
             description="Нажмите, чтобы отправить расписание на четверг",
             caption="📆 <b>Расписание на четверг</b>",
@@ -79,7 +79,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание на пятницу",
             description="Нажмите, чтобы отправить расписание на пятницу",
             caption="📆 <b>Расписание на пятницу</b>",
@@ -94,7 +94,7 @@ async def inline_inline_query(query: InlineQuery):
 
         result = InlineQueryResultCachedPhoto(
             id=result_id,
-            photo_file_id=f"{file_id[0]}",
+            photo_file_id=file_id,
             title="Расписание звонков",
             description="Нажмите, чтобы отправить расписание звонков",
             caption="🔔 <b>Расписание звонков</b>",

@@ -97,6 +97,7 @@ class ScheduleKeyboards:
         [InlineKeyboardButton(text='📅 Понедельник', callback_data='monday'), InlineKeyboardButton(text='📅 Вторник', callback_data='tuesday'), InlineKeyboardButton(text='📅 Среда', callback_data='wednesday')],
         [InlineKeyboardButton(text='📅 Четверг', callback_data='thursday'), InlineKeyboardButton(text='📅 Пятница', callback_data='friday')],
         [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
+        [InlineKeyboardButton(text='⚠️ Неточности в расписании?', callback_data='help_with_schedule')],
         [InlineKeyboardButton(text='⬅️ Назад', callback_data='back')],
     ])
 

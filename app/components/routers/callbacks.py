@@ -8,7 +8,7 @@ from sqlalchemy import update, select
 from app.components.keyboard import bug_report, advert_kb
 from app.components.keyboard import ScheduleKeyboards
 from app.components.keyboard import main_menu as menu_keyboard
-from app.components.keyboard import settings_keyboard, back_main
+from app.components.keyboard import settings_keyboard, back_main, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 import app.supportfunctions.main_utils as util
 from app.database.requests import get_user_with_notify, get_all_users, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
@@ -299,3 +299,10 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
             print(e)
         else:
             await callback.answer('Вы уже в конце')
+
+
+
+@router_callback.callback_query(F.data == 'help_with_schedule')
+async def help_with_schedule(callback: CallbackQuery) -> None:
+    await callback.message.answer(f'<b>⚠️ Неточности в расписании</b>\n\nВы можете помочь боту, скинув текущее расписание в личку <a href="https://t.me/HelperSchool3News">телеграмм канала</a> (слева снизу кнопка сообщения).\n\nНад расписанием второй смены ведутся работы, скоро обновим.', parse_mode='html', reply_markup=notify)
+    await callback.answer('Удачно!')
