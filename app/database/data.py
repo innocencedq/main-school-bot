@@ -28,6 +28,7 @@ class User(Base):
     requests_ai: Mapped[int] = mapped_column(default=35)
     refresh_token: Mapped[str] = mapped_column(default='None')
     access_token: Mapped[str] = mapped_column(default='None')
+    shift: Mapped[int] = mapped_column(default=1)
     extended_diary = Column(Boolean, default=False)
     tester = Column(Boolean, default=False)
 
@@ -72,6 +73,7 @@ class ReportTicket(Base):
     from_id: Mapped[int] = mapped_column(BigInteger)
     closed: Mapped[bool] = mapped_column(Boolean, default=False)
     topic: Mapped[str] = mapped_column()
+
 
 async def async_main():
     async with engine.begin() as conn:

@@ -316,3 +316,22 @@ async def zaglushka_deploy():
             stmt = (update(Images).where(Images.image_name == day).values(image_id=ZAGLUSHKA_FILE_ID))
             await session.execute(stmt)
         await session.commit()
+
+
+async def get_shift(id):
+    res = await redis.get(name='user:shift:' + str(id))
+    if not res:
+        async with async_session() as session:
+            stmt = await session.scalar(select(User.shift).where(User.tg_id == int(id)))
+            await redis.set(name="user:shift:" + str(id), value=stmt)
+            return stmt
+    else:
+        return res.decode('utf-8') if isinstance(res, bytes) else res
+        
+
+async def change_user_shift(id, choosed):
+    async with async_session() as session:
+        stmt = update(User).where(User.tg_id == id).values(shift = choosed)
+        await session.execute(stmt)
+        await session.commit()
+        await redis.delete("user:shift:" + str(id))

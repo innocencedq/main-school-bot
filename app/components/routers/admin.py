@@ -12,10 +12,10 @@ from app.components.routers.callbacks import back_callback
 from app.database.data import Images, async_session, Admin
 from app.database.requests import count_users, check_admin, advert_write_sql, refresh_last_advert_id, del_image_from_redis, get_all_data_about_advert, update_data_about_advert, \
     deleting_data_about_advert, refresh_last_advert_id, get_image, add_admin, zaglushka_deploy
-from app.components.keyboard import admin_panel, adm_back, adm_rasp, next_week, tech_works, confirm_adm, repeat_adm, \
+from app.components.keyboard import admin_panel, adm_back, adm_rasp, tech_works, confirm_adm, repeat_adm, \
     confirm_schedule, confirm_day, confirm_calls, send_own_message, manual_formatting, advert_manage_kb, advert_confirmed, \
-    advert_skip_picture, advert_continue_picture, advert_edit_cancel, advert_editing, advert_continue_edit, adm_update_schedule, \
-    adm_update_selected_schedule
+    advert_skip_picture, advert_continue_picture, advert_edit_cancel, advert_editing, advert_continue_edit, adm_update_schedule \
+    
 from app.components.keyboard import notify as hide
 from app.components.notifyprocesses.notify import notify_update_schedule, technical_works, technical_works_finish, notify_rework_schedule, message_admin, notify_update_calls, \
     new_advert_notify
@@ -71,17 +71,14 @@ async def adminpanel_callback(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(f'<b>Админ панель</b>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
 
 
-@router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'day_change', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin']))
+@router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin']))
 async def callback(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'notify_schedule':
-        await callback.message.edit_text('<b>Выберите один из вариантов.</b>\n\n1. Обновить расписание на следующую неделю\n2. Обновить расписание на день недели\n3. Обновить расписание звонков\n4. Заполнить расписание заглушками', reply_markup=adm_rasp, parse_mode='html')
+        await callback.message.edit_text('<b>Выберите один из вариантов.</b>\n\n1. <s>Обновление расписания на следующую неделю</s> <b>НЕ РАБОТАЕТ!!!</b>\n2. Обновить расписание на день недели\n3. Обновить расписание звонков\n4. Заполнить расписание заглушками', reply_markup=adm_rasp, parse_mode='html')
 
     elif callback.data == 'next_week_notify':
-        await callback.message.edit_text('<b>Обновление расписания на следующую неделю</b>\n\nСначала отправьте расписание на понедельник', reply_markup=adm_back, parse_mode='html')
+        await callback.message.edit_text('<s>Обновление расписания на следующую неделю</s> <b>НЕ РАБОТАЕТ!!!</b>\n\nСначала отправьте расписание на понедельник', reply_markup=adm_back, parse_mode='html')
         await state.set_state(Form.waiting_schedule)
-
-    elif callback.data == 'day_change':
-        await callback.message.edit_text('<b>Внесение изменений в текущее расписание</b>\n\nВыберите день недели.', reply_markup=next_week, parse_mode='html')
 
     elif callback.data == 'tech_works':
         await callback.message.edit_text('<b>Технический перерыв</b>\n\nВыберите один из вариантов', reply_markup=tech_works, parse_mode='html')
@@ -168,10 +165,10 @@ async def callback(callback: CallbackQuery, state: FSMContext):
     elif callback.data == 'yes_day_change':
         data = await state.get_data()
         day = data.get('day')
+        shift = data.get('shift')
 
         await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
-        await del_image_from_redis(day)
-        await notify_rework_schedule(message=day)
+        await notify_rework_schedule(message=f'schedule:{shift}:{day}')
         await state.clear()
 
         await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
@@ -240,10 +237,10 @@ async def waiting_calls(message: Message, state: FSMContext):
         try:
             file_id = message.photo[0].file_id
 
-            stmt = update(Images).where(Images.image_name == 'calls').values(image_id=file_id)
+            stmt = update(Images).where(Images.image_name == 'schedule:calls').values(image_id=file_id)
             await session.execute(stmt)
             await session.commit()
-            await del_image_from_redis('calls')
+            await del_image_from_redis('schedule:calls')
 
             await state.clear()
             await message.answer('Расписание звонков загружено! Не удаляйте отправленную фотографию! Оповестить всех? (нажмите один раз на кнопку и ждите, бот делает рассылку ~30 секунд)', reply_markup=confirm_calls)
@@ -314,19 +311,19 @@ async def schedule_update_confirm(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text('Изменения были подтверждены! Оповестить всех?', reply_markup=confirm_schedule)
 
 
-@router_adm.message(Form.waiting_day)
-async def waiting_day(message: Message, state: FSMContext):
-    try:
-        days = {"monday": "понедельник", "tuesday": "вторник", "wednesday": "среду", "thursday": "четверг", "friday": "пятницу"}
-        data = await state.get_data()
-        day = data.get('day')
-        file_id = message.photo[0].file_id
+# @router_adm.message(Form.waiting_day)
+# async def waiting_day(message: Message, state: FSMContext):
+#     try:
+#         days = {"monday": "понедельник", "tuesday": "вторник", "wednesday": "среду", "thursday": "четверг", "friday": "пятницу"}
+#         data = await state.get_data()
+#         day = data.get('day')
+#         file_id = message.photo[0].file_id
 
-        await state.update_data({'day_file_id': file_id})
-        await message.answer_photo(photo=message.photo[-1].file_id, caption=f"Подтвердите изменение расписания на {days[day]}", reply_markup=adm_update_selected_schedule)
-    except Exception as e:
-        print(e)
-        await message.answer('Что-то пошло не так... Перезайдите в админ панель и попробуйте снова - /adminpanel')
+#         await state.update_data({'day_file_id': file_id})
+#         await message.answer_photo(photo=message.photo[-1].file_id, caption=f"Подтвердите изменение расписания на {days[day]}", reply_markup=adm_update_selected_schedule)
+#     except Exception as e:
+#         print(e)
+#         await message.answer('Что-то пошло не так... Перезайдите в админ панель и попробуйте снова - /adminpanel')
 
 
 @router_adm.callback_query(F.data == 'schedule_selected_update_confirm')

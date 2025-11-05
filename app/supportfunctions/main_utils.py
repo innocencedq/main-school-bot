@@ -34,6 +34,17 @@ async def get_fast_rasp(week):
     }
     return f, message[week], markup[week]
 
+
+def get_day_name(day: str) -> str:
+    day_names = {
+        "monday": "Понедельник",
+        "tuesday": "Вторник", 
+        "wednesday": "Среда",
+        "thursday": "Четверг",
+        "friday": "Пятница"
+    }
+    return day_names.get(day, day)
+
     
 async def try_delete_msg_callback(callback: CallbackQuery):
     try:

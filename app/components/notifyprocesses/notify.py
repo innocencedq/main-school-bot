@@ -138,10 +138,13 @@ async def notify_rework_schedule(message):
     for users in await get_all_users():
         days = {"monday": "понедельник", "tuesday": "вторник", "wednesday": "среду", "thursday": "четверг",
                 "friday": "пятницу"}
+        
+        day = message.split(':')[2]
+        shift = message.split(':')[1]
 
         try:
             from run import bot
-            await bot.send_message(users, f'<b>‼️ Обновление расписания!\n\n📅 Внесены изменения в расписании на {days[f"{message}"]}!</b>\n  ᅠ ', parse_mode='html', reply_markup=await notify_schedule(message))
+            await bot.send_message(users, f'<b>‼️ Обновление расписания!\n\n📅 Внесены изменения в расписании на {days[day]} в {shift} смену!</b>\n  ᅠ ', parse_mode='html', reply_markup=await notify_schedule(message))
         except TelegramRetryAfter as e:
             retry_after = e.retry_after
             await asyncio.sleep(retry_after)

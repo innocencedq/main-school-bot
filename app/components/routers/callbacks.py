@@ -16,7 +16,7 @@ from app.database.requests import get_user_with_notify, get_all_users, get_image
 from app.database.data import async_session, User, Static
 import app.database.requests as req
 
-from config import welcome_message, bug_report_message, DEVELOPER_ID
+from config import welcome_message, bug_report_message
 
 from app.components.routers.states import TechSup
 
@@ -27,7 +27,7 @@ router_callback = Router()
 async def quick_settings_menu(callback: CallbackQuery):
     async with async_session() as session:
         if callback.data == 'yes_notify':
-            stmt = (update(User).where(User.tg_id == callback.message.from_user.id).values(notify_vk=True))
+            stmt = (update(User).where(User.tg_id == callback.from_user.id).values(notify_vk=True))
             await session.execute(stmt)
             await session.commit()
     await callback.message.edit_text('⚙️ <b>Быстрая настройка</b>\n\nНужно ли быстрое меню?\n\n<a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню</a>\n<b>Настройки можно будет изменить в главном меню</b>', parse_mode='HTML', reply_markup=ask_quick_menu)
@@ -50,15 +50,16 @@ async def rasp_callback(callback: CallbackQuery):
 
     f = await get_image(week_name='main_rasp')
     photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
+    shift = await req.get_shift(user_id)
 
     try:
-        await callback.message.edit_media(media=photo, reply_markup=ScheduleKeyboards.rasp, parse_mode='html')
+        await callback.message.edit_media(media=photo, reply_markup=ScheduleKeyboards.rasp(shift=shift), parse_mode='html')
     except Exception:
         try:
             await callback.message.delete()
         except TelegramBadRequest:
             pass
-        await callback.message.answer('<b>📅 Выберите день недели</b>', reply_markup=ScheduleKeyboards.rasp, parse_mode='html')
+        await callback.message.answer('<b>📅 Выберите день недели</b>', reply_markup=ScheduleKeyboards.rasp(shift=shift), parse_mode='html')
 
 
 #Назад в главное меню
@@ -74,6 +75,25 @@ async def back_callback(callback: CallbackQuery, state: FSMContext, where: str =
                                             parse_mode='html')
     else:
         await callback.message.edit_media(media=photo, caption=welcome_message, reply_markup=await menu_keyboard(user=callback.from_user.id), parse_mode='html')
+
+@router_callback.callback_query(F.data == 'schedule_change_shift')
+async def schedule_change_shift(callback: CallbackQuery):
+    shift = await req.get_shift(callback.from_user.id)
+    f = await get_image(week_name='main_rasp')
+    photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
+
+    await callback.message.edit_media(media=photo,
+                              reply_markup=ScheduleKeyboards.shift_selection(current_shift=str(shift)),
+                              parse_mode='html')
+
+
+
+@router_callback.callback_query(F.data.startswith("schedule_set_shift:"))
+async def shedule_change_shift(callback: CallbackQuery):
+    shift = callback.data.split(':')[1]
+
+    await req.change_user_shift(callback.from_user.id, str(shift))
+    await schedule_change_shift(callback)
 
 
 #Настройки
@@ -242,25 +262,25 @@ async def page_callback(callback: CallbackQuery):
 
 
 #Расписание
-@router_callback.callback_query(F.data.in_(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'calls']))
+@router_callback.callback_query(F.data.startswith('schedule:'))
 async def week_callback(callback: CallbackQuery):
+    day = callback.data.split(':')[2] if len(callback.data.split(':')) == 3 else callback.data.split(':')[1]
+    user_shift = await req.get_shift(callback.from_user.id)
+
     day_data = {
-        'monday': ('<b>🗓 Расписание на понедельник</b>', ScheduleKeyboards.monday),
-        'tuesday': ('<b>🗓 Расписание на вторник</b>', ScheduleKeyboards.tuesday),
-        'wednesday': ('<b>🗓 Расписание на среду</b>', ScheduleKeyboards.wednesday),
-        'thursday': ('<b>🗓 Расписание на четверг</b>', ScheduleKeyboards.thursday),
-        'friday': ('<b>🗓 Расписание на пятницу</b>', ScheduleKeyboards.friday),
-        'calls': ('<b>🔔 Расписание звонков</b>', ScheduleKeyboards.calls)
+        'monday': ('<b>🗓 Расписание на понедельник</b>', ScheduleKeyboards.monday(shift=str(user_shift))),
+        'tuesday': ('<b>🗓 Расписание на вторник</b>', ScheduleKeyboards.tuesday(shift=str(user_shift))),
+        'wednesday': ('<b>🗓 Расписание на среду</b>', ScheduleKeyboards.wednesday(shift=str(user_shift))),
+        'thursday': ('<b>🗓 Расписание на четверг</b>', ScheduleKeyboards.thursday(shift=str(user_shift))),
+        'friday': ('<b>🗓 Расписание на пятницу</b>', ScheduleKeyboards.friday(shift=str(user_shift))),
+        'calls': ('<b>🔔 Расписание звонков</b>', ScheduleKeyboards.calls())
     }
     
-    if callback.data in day_data:
-        caption, markup = day_data[callback.data]
+    if day in day_data:
+        caption, markup = day_data[day]
         f = await get_image(week_name=callback.data)
         photo = InputMediaPhoto(media=f, caption=caption, parse_mode='html')
         await callback.message.edit_media(media=photo, reply_markup=markup)
-
-
-
 
 
 @router_callback.callback_query(F.data.startswith('advert-'))

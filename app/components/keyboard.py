@@ -2,7 +2,8 @@ from functools import lru_cache
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from app.database.requests import get_user_with_notify, get_list_admin, get_quick_menu, get_user_with_extended_diary, check_admin, get_refresh_token, get_last_advert_id, get_list_open_tickets
+from app.database.requests import get_user_with_notify, get_list_admin, get_quick_menu, get_user_with_extended_diary, check_admin, get_refresh_token, get_last_advert_id, get_list_open_tickets, get_shift
+
 
 #Клавиатура быстрой настройки
 ask_notify = InlineKeyboardMarkup(inline_keyboard=[
@@ -91,59 +92,88 @@ back_main_2 = InlineKeyboardMarkup(inline_keyboard=[
 
 
 #Клавиатура расписаний
-@lru_cache
-class ScheduleKeyboards:
-    rasp = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📅 Понедельник', callback_data='monday'), InlineKeyboardButton(text='📅 Вторник', callback_data='tuesday'), InlineKeyboardButton(text='📅 Среда', callback_data='wednesday')],
-        [InlineKeyboardButton(text='📅 Четверг', callback_data='thursday'), InlineKeyboardButton(text='📅 Пятница', callback_data='friday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
-        [InlineKeyboardButton(text='⚠️ Неточности в расписании?', callback_data='help_with_schedule')],
+def get_rasp_keyboard(shift: str = "1") -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='📅 Понедельник', callback_data=f'schedule:{shift}:monday'), 
+         InlineKeyboardButton(text='📅 Вторник', callback_data=f'schedule:{shift}:tuesday'), 
+         InlineKeyboardButton(text='📅 Среда', callback_data=f'schedule:{shift}:wednesday')],
+        [InlineKeyboardButton(text='📅 Четверг', callback_data=f'schedule:{shift}:thursday'), 
+         InlineKeyboardButton(text='📅 Пятница', callback_data=f'schedule:{shift}:friday')],
+        [InlineKeyboardButton(text='🔔 Звонки', callback_data='schedule:calls')],
+        [InlineKeyboardButton(text=f'🔄 Сменить смену', callback_data=f'schedule_change_shift'), 
+         InlineKeyboardButton(text='⚠️ Неточности в расписании?', callback_data='help_with_schedule')],
         [InlineKeyboardButton(text='⬅️ Назад', callback_data='back')],
     ])
 
+def get_day_keyboard(day: str, shift: str = "1") -> InlineKeyboardMarkup:
+    days_order = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+    day_index = days_order.index(day)
+    
+    prev_day = days_order[(day_index - 1) % 5]
+    next_day = days_order[(day_index + 1) % 5]
+    
+    page_number = day_index + 1
 
-    monday = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📆 Пятница', callback_data='friday'), InlineKeyboardButton(text='1/5', callback_data='page'), InlineKeyboardButton(text='📆 Вторник', callback_data='tuesday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
+    from app.supportfunctions.main_utils import get_day_name
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=f'📆 {get_day_name(prev_day)}', callback_data=f'schedule:{shift}:{prev_day}'), 
+         InlineKeyboardButton(text=f'{page_number}/5', callback_data='page'), 
+         InlineKeyboardButton(text=f'📆 {get_day_name(next_day)}', callback_data=f'schedule:{shift}:{next_day}')],
+        [InlineKeyboardButton(text=f'🔄 Сменить смену', callback_data=f'schedule_change_shift')],
+        [InlineKeyboardButton(text='🔔 Звонки', callback_data='schedule:calls')],
         [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
     ])
 
 
-    tuesday = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📆 Понедельник', callback_data='monday'), InlineKeyboardButton(text='2/5', callback_data='page'), InlineKeyboardButton(text='📆 Среда', callback_data='wednesday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
+def get_calls_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
     ])
 
 
-    wednesday = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📆 Вторник', callback_data='tuesday'), InlineKeyboardButton(text='3/5', callback_data='page'), InlineKeyboardButton(text='📆 Четверг', callback_data='thursday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
+def get_shift_selection_keyboard(current_shift: str = "1") -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=('1 смена ✅' if current_shift == "1" else '1 смена'), callback_data='schedule_set_shift:1'),
+         InlineKeyboardButton(text=('2 смена ✅' if current_shift == "2" else '2 смена'), callback_data='schedule_set_shift:2')],
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'rasp')]
     ])
 
 
-    thursday = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📆 Среда', callback_data='wednesday'), InlineKeyboardButton(text='4/5', callback_data='page'), InlineKeyboardButton(text='📆 Пятница', callback_data='friday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
-    ])
-
-
-    friday = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='📆 Четверг', callback_data='thursday'), InlineKeyboardButton(text='5/5', callback_data='page'), InlineKeyboardButton(text='📆 Понедельник', callback_data='monday')],
-        [InlineKeyboardButton(text='🔔 Звонки', callback_data='calls')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
-    ])
-
-
-    calls = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
-    ])
+class ScheduleKeyboards:
+    @staticmethod
+    def rasp(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_rasp_keyboard(shift)
+    
+    @staticmethod
+    def monday(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_day_keyboard("monday", shift)
+    
+    @staticmethod
+    def tuesday(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_day_keyboard("tuesday", shift)
+    
+    @staticmethod
+    def wednesday(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_day_keyboard("wednesday", shift)
+    
+    @staticmethod
+    def thursday(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_day_keyboard("thursday", shift)
+    
+    @staticmethod
+    def friday(shift: str = "1") -> InlineKeyboardMarkup:
+        return get_day_keyboard("friday", shift)
+    
+    @staticmethod
+    def calls() -> InlineKeyboardMarkup:
+        return get_calls_keyboard()
+    
+    @staticmethod
+    def shift_selection(current_shift: str = "1") -> InlineKeyboardMarkup:
+        return get_shift_selection_keyboard(current_shift)
 
 
 #Уведомления
-
 async def notify_all_schedule():
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(text='🗓 Расписание', callback_data='rasp'))
@@ -231,10 +261,6 @@ adm_update_schedule = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Отмена', callback_data='adminpanel')]
 ])
 
-adm_update_selected_schedule = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Продолжить', callback_data='schedule_selected_update_confirm')],
-    [InlineKeyboardButton(text='Отмена', callback_data='adminpanel')]
-])
 
 adm_back = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')]
@@ -259,15 +285,6 @@ adm_rasp = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')],
 ])
 
-
-next_week = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Понедельник', callback_data='monday_rasp')],
-    [InlineKeyboardButton(text='Вторник', callback_data='tuesday_rasp')],
-    [InlineKeyboardButton(text='Среда', callback_data='wednesday_rasp')],
-    [InlineKeyboardButton(text='Четверг', callback_data='thursday_rasp')],
-    [InlineKeyboardButton(text='Пятница', callback_data='friday_rasp')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')],
-])
 
 
 confirm_adm = InlineKeyboardMarkup(inline_keyboard=[

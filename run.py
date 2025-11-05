@@ -17,6 +17,7 @@ from app.components.diary.callback_diary import callback_diary
 from app.supportfunctions.check_users import remove_blocked_users
 from app.supportfunctions.redis_misc import redis
 from app.components.routers.tickets.topics import topic_router
+from app.components.routers.func_admin.schedule_changer import router_adm as checker_router
 
 bot = Bot(token=tg_token)
 
@@ -27,7 +28,16 @@ async def main():
     asyncio.create_task(remove_blocked_users())
 
     dp = Dispatcher(storage=RedisStorage(redis))
-    dp.include_routers(router, router_callback, router_adm, router_events, router_woman_day, router_inline_mode, week_with_ai, callback_diary, topic_router)
+    dp.include_routers(router, 
+                       router_callback, 
+                       router_adm, 
+                       router_events, 
+                       router_woman_day, 
+                       router_inline_mode, 
+                       week_with_ai, 
+                       callback_diary, 
+                       topic_router,
+                       checker_router)
 
     await dp.start_polling(bot)
 
