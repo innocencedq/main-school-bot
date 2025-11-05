@@ -324,5 +324,5 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
 
 @router_callback.callback_query(F.data == 'help_with_schedule')
 async def help_with_schedule(callback: CallbackQuery) -> None:
-    await callback.message.answer(f'<b>⚠️ Неточности в расписании</b>\n\nВы можете помочь боту, скинув текущее расписание в личку <a href="https://t.me/HelperSchool3News">телеграмм канала</a> (слева снизу кнопка сообщения).\n\nНад расписанием второй смены ведутся работы, скоро обновим.', parse_mode='html', reply_markup=notify)
+    await callback.message.answer(f'<b>⚠️ Неточности в расписании</b>\n\nВы можете помочь боту, скинув текущее расписание в личку <a href="https://t.me/HelperSchool3News">телеграмм канала</a> (в левом нижмем углу кнопка сообщения).', parse_mode='html', reply_markup=notify)
     await callback.answer('Удачно!')
