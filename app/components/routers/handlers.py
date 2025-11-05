@@ -12,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from app.components.diary.parsing import refresh_token as rf
 from app.supportfunctions.main_utils import get_week, get_fast_rasp
 from app.components.routers.callbacks import week_callback
-from app.database.requests import get_all_users, get_list_admin, get_image
+from app.database.requests import get_all_users, get_list_admin, get_image, get_shift
 from app.database.data import async_session, User, Images, Static
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify, ask_quick_menu
 from app.components.keyboard import back_main_2 as back
@@ -118,7 +118,8 @@ async def week_quick_callback(message: Message):
             await session.commit()
     try:
         week = await get_week()
-        f, msg, markup = await get_fast_rasp(week)
+        shift = await get_shift(message.from_user.id)
+        f, msg, markup = await get_fast_rasp(f"schedule:{shift}:{week}")
 
         await message.answer_photo(photo=f, caption=f'{msg}', reply_markup=markup, parse_mode='html')
     except Exception:

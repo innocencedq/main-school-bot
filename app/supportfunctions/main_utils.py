@@ -16,8 +16,11 @@ async def get_week():
     return day
 
 
-async def get_fast_rasp(week):
+async def get_fast_rasp(week: str):
     f = await get_image(week)
+    day = week.split(':')[2]
+    shift = week.split(':')[1]
+
     message = {
         "monday": "<b>🗓 Расписание на понедельник</b>",
         "tuesday": "<b>🗓 Расписание на вторник</b>",
@@ -26,13 +29,13 @@ async def get_fast_rasp(week):
         "friday": "<b>🗓 Расписание на пятницу</b>"
     }
     markup = {
-        "monday": ScheduleKeyboards.monday,
-        "tuesday": ScheduleKeyboards.tuesday,
-        "wednesday": ScheduleKeyboards.wednesday,
-        "thursday": ScheduleKeyboards.thursday,
-        "friday": ScheduleKeyboards.friday
+        "monday": ScheduleKeyboards.monday(shift=shift),
+        "tuesday": ScheduleKeyboards.tuesday(shift=shift),
+        "wednesday": ScheduleKeyboards.wednesday(shift=shift),
+        "thursday": ScheduleKeyboards.thursday(shift=shift),
+        "friday": ScheduleKeyboards.friday(shift=shift)
     }
-    return f, message[week], markup[week]
+    return f, message[day], markup[day]
 
 
 def get_day_name(day: str) -> str:
