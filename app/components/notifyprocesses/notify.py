@@ -75,11 +75,11 @@ async def new_advert_notify(title):
                 continue
 
 
-async def notify_update_schedule():
+async def notify_update_schedule(shift):
     for users in await get_all_users():
         try:
             from run import bot
-            await bot.send_message(users, '<b>‼️ Обновление расписания!\n\n📅 Обновлено расписание на следующую неделю!</b>\n ᅠ ', parse_mode='html', reply_markup=await notify_all_schedule())
+            await bot.send_message(users, f'<b>‼️ Обновление расписания!\n\n📅 Обновлено расписание на следующую неделю {"в <u>первую</u>" if shift == '1' else "во <u>вторую</u>"} смену!</b>\n ᅠ ', parse_mode='html', reply_markup=await notify_all_schedule())
         except TelegramRetryAfter as e:
             retry_after = e.retry_after
             await asyncio.sleep(retry_after)
@@ -144,7 +144,9 @@ async def notify_rework_schedule(message):
 
         try:
             from run import bot
-            await bot.send_message(users, f'<b>‼️ Обновление расписания!\n\n📅 Внесены изменения в расписании на {days[day]} в {shift} смену!</b>\n  ᅠ ', parse_mode='html', reply_markup=await notify_schedule(message))
+            await bot.send_message(users, f'<b>‼️ Обновление расписания!\n\n📅 Внесены изменения в расписании на <u>{days[day]}</u> {"в <u>первую</u>" if shift == '1' else "во <u>вторую</u>"} смену!</b>\n  ᅠ ',
+                                   parse_mode='html',
+                                   reply_markup=await notify_schedule(message))
         except TelegramRetryAfter as e:
             retry_after = e.retry_after
             await asyncio.sleep(retry_after)
