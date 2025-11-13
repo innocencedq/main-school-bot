@@ -45,7 +45,8 @@ async def get_info_mark(user, max_retries=2):
                     if response.status != 200 and response.status != 304:
                         raise ValueError(f"wrong periods // status code: {response.status}")
                     data = await response.json()
-
+                    
+                    print(formatted_class)
                     if int(formatted_class) < 10:
                         period_id = data[1]["id"]
                     else:
