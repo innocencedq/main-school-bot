@@ -6,6 +6,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery, InputMediaVideo, InputMediaPhoto
 from aiogram.exceptions import TelegramBadRequest
 
+from app.components.logs.logs import logger
 from app.database.data import User, async_session
 from app.components.diary.response import get_all_period_marks as all_marks
 from app.components.diary.response import get_homework as gh
@@ -245,10 +246,15 @@ async def methods(callback: CallbackQuery):
 
 @callback_diary.callback_query(F.data == 'settings_diary')
 async def settings_diary(callback: CallbackQuery):
-    await callback.message.edit_caption(caption='⚙️ <b>Настройки дневника</b>\n\n<a href="https://telegra.ph/CHto-takoe-Obnovit-tokeny-Obnovlenie-tokenov-vruchnuyu-i-Uvedomleniya-ob-ocenkah-11-13">Что такое «Обновить токены», «Обновление токенов вручную» и «Уведомления об оценках»?</a>',
-                                        reply_markup=await diary_settings_kb(callback.from_user.id),
-                                        parse_mode='html')
-    
+    try:
+        await callback.message.edit_caption(caption='⚙️ <b>Настройки дневника</b>\n\n<a href="https://telegra.ph/CHto-takoe-Obnovit-tokeny-Obnovlenie-tokenov-vruchnuyu-i-Uvedomleniya-ob-ocenkah-11-13">Что такое «Обновить токены», «Обновление токенов вручную» и «Уведомления об оценках»?</a>',
+                                            reply_markup=await diary_settings_kb(callback.from_user.id),
+                                            parse_mode='html')
+    except TelegramBadRequest as e:
+        if 'message is not modified' in str(e):
+            pass
+        else:
+            await logger.error("Error in settings_diary")
 
 @callback_diary.callback_query(F.data == 'change_notify_diary')
 async def change_notify_diary(callback: CallbackQuery):
