@@ -35,7 +35,7 @@ async def get_info_mark(user, max_retries=2):
 
                     data = await response.json()
                     id = data['children'][0]['id']
-                    school_class = data['children'][0]['school_class'].split('АБВГД')
+                    school_class = data['children'][0]['school_class'].split('АБВГД')[0]
 
                 async with session.get(urls["periods"], headers=headers, params={"id": id}) as response:
                     if response.status != 200 and response.status != 304:
