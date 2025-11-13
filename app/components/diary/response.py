@@ -37,9 +37,10 @@ async def get_info_mark(user, max_retries=2):
                     id = data['children'][0]['id']
                     
                     chars_remove = ['А', 'Б', 'В', 'Г', 'Д']
-                    school_class = data['children'][0]['school_class']
+                    school_class = data['children'][0]['school_class'] # "11Б"
                     for char in chars_remove:
-                        formatted_class = school_class.replace(char, '')
+                        school_class = school_class.replace(char, '')
+                    formatted_class = school_class
 
                 async with session.get(urls["periods"], headers=headers, params={"id": id}) as response:
                     if response.status != 200 and response.status != 304:
