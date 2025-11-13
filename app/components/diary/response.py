@@ -42,7 +42,7 @@ async def get_info_mark(user, max_retries=2):
                         raise ValueError(f"wrong periods // status code: {response.status}")
                     data = await response.json()
 
-                    if school_class < 10:
+                    if int(school_class) < 10:
                         period_id = data[1]["id"]
                     else:
                         period_id = data[0]["id"]
@@ -290,7 +290,7 @@ async def get_marks_last_day(user: str) -> Dict[str, Any]:
         "subjects_with_marks": count_subjects_with_marks,
         "good_marks_total": count_good_marks,
         "subjects": all_subjects_data
-    } 
+    }
 
 
 async def get_homework(user: str) -> Dict[str, Any]:
