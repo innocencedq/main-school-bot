@@ -37,7 +37,7 @@ async def get_info_mark(user, max_retries=2):
                     id = data['children'][0]['id']
                     
                     chars_remove = ['А', 'Б', 'В', 'Г', 'Д']
-                    school_class = data['children'][0]['school_class'] # "11Б"
+                    school_class = data['children'][0]['school_class']
                     for char in chars_remove:
                         school_class = school_class.replace(char, '')
                     formatted_class = school_class
@@ -47,7 +47,6 @@ async def get_info_mark(user, max_retries=2):
                         raise ValueError(f"wrong periods // status code: {response.status}")
                     data = await response.json()
                     
-                    print(formatted_class)
                     if int(formatted_class) < 10:
                         period_id = data[1]["id"]
                     else:
