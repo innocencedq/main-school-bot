@@ -16,10 +16,10 @@ async def refresh_token(user, token: str = None):
         "Connection": "keep-alive",
         "Content-Type": "application/json",
         "DNT": "1",
-        "Origin": "https://pwa.kiasuo.ru",
+        "Origin": "https://dnevnik.kiasuo.ru",
         "Pragma": "no-cache",
         "Priority": "u=4",
-        "Referer": "https://pwa.kiasuo.ru/",
+        "Referer": "https://dnevnik.kiasuo.ru/",
         "Sec-Fetch-Dest": "empty",
         "Sec-Fetch-Mode": "cors",
         "Sec-Fetch-Site": "same-site",
@@ -30,10 +30,12 @@ async def refresh_token(user, token: str = None):
     }
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, json=payload) as response:
-            if response.status == 200:
+            if response.status == 200 or response.status == 304:
                 data = await response.json()
+
                 new_access_token = data.get("accessToken")
                 new_refresh_token = data.get("refreshToken")
+                
                 await update_tokens(new_access_token, new_refresh_token, user)
                 return 'success'
             else:

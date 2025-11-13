@@ -20,7 +20,20 @@ async def get_all_users_with_notify():
         value = await session.scalars(select(User.tg_id).filter_by(notify_vk=True))
         value = value.all()
         return value
+    
 
+async def get_all_users_with_notify_mark():
+    async with async_session() as session:
+        value = await session.scalars(select(User.tg_id).filter_by(notify_diary=True))
+        value = value.all()
+        return {"users": value}
+    
+
+async def get_user_with_notify_mark(user):
+    async with async_session() as session:
+        value = await session.scalar(select(User.notify_diary).where(User.tg_id == user))
+        return value
+    
 
 async def get_user_with_notify(user):
     async with async_session() as session:
@@ -104,14 +117,10 @@ async def get_refresh_token(user):
     
 
 async def get_access_token(user):
-    res = await redis.get(name="access_token:" + str(user))
-    if not res:
-        async with async_session() as session:
-            access_token = await session.scalar(select(User.access_token).where(User.tg_id == user))
-            await redis.set(name="access_token:" + str(user), value=access_token)
-            return access_token
-    else:
-        return res
+    async with async_session() as session:
+        access_token = await session.scalar(select(User.access_token).where(User.tg_id == user))
+        await redis.set(name="access_token:" + str(user), value=access_token)
+        return access_token
     
 
 async def update_tokens(access_token, refresh_token, user):

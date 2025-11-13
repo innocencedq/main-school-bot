@@ -30,7 +30,7 @@ async def quick_settings_menu(callback: CallbackQuery):
             stmt = (update(User).where(User.tg_id == callback.from_user.id).values(notify_vk=True))
             await session.execute(stmt)
             await session.commit()
-    await callback.message.edit_text('⚙️ <b>Быстрая настройка</b>\n\nНужно ли быстрое меню?\n\n<a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню</a>\n<b>Настройки можно будет изменить в главном меню</b>', parse_mode='HTML', reply_markup=ask_quick_menu)
+    await callback.message.edit_text('⚙️ <b>Быстрая настройка</b>\n\nНужно ли быстрое меню?\n\n<a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>\n<b>Настройки можно будет изменить в главном меню</b>', parse_mode='HTML', reply_markup=ask_quick_menu)
 
 
 #Расписание из главного меню
@@ -101,7 +101,7 @@ async def shedule_change_shift(callback: CallbackQuery):
 async def settings_callback(callback: CallbackQuery, where: str = None):
     async with async_session() as session:
         f = await get_image(week_name='main_settings')
-        photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню</a>', parse_mode='html')
+        photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', parse_mode='html')
         user = callback.from_user.id
 
         if user not in await get_all_users():
@@ -115,7 +115,7 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
 
 
         if where == 'quick_menu':
-            await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
+            await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
         else:
             await callback.message.edit_media(media=photo, reply_markup=await settings_keyboard(user=user))
 

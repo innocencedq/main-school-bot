@@ -31,6 +31,7 @@ class User(Base):
     shift: Mapped[int] = mapped_column(default=1)
     extended_diary = Column(Boolean, default=False)
     tester = Column(Boolean, default=False)
+    notify_diary: Mapped[bool] = mapped_column(default=False) 
 
 
 class Admin(Base):

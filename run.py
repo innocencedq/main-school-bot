@@ -3,6 +3,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 
+from app.components.diary.vault import notify_last_marks
 from config import tg_token
 from app.components.routers.handlers import router
 from app.database.data import async_main
@@ -24,8 +25,10 @@ bot = Bot(token=tg_token)
 #Функция инициализации
 async def main():
     await async_main()
-    asyncio.create_task(send_new_posts())
+    
     asyncio.create_task(remove_blocked_users())
+    asyncio.create_task(send_new_posts())
+    asyncio.create_task(notify_last_marks())
 
     dp = Dispatcher(storage=RedisStorage(redis))
     dp.include_routers(router, 
