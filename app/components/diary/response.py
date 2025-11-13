@@ -35,14 +35,16 @@ async def get_info_mark(user, max_retries=2):
 
                     data = await response.json()
                     id = data['children'][0]['id']
+                    school_class = data['children'][0]['school_class'].split('АБВГД')
 
                 async with session.get(urls["periods"], headers=headers, params={"id": id}) as response:
                     if response.status != 200 and response.status != 304:
                         raise ValueError(f"wrong periods // status code: {response.status}")
                     data = await response.json()
-                    try:
-                        period_id = data[0]["id"]
-                    except IndexError:
+
+                    if school_class < 10:
+                        period_id = data[1]["id"]
+                    else:
                         period_id = data[0]["id"]
 
                 async with session.get(f"https://diaryapi.kiasuo.ru/diary/api/lesson_marks/{period_id}?id={id}", headers=headers) as response:
