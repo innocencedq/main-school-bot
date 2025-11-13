@@ -290,7 +290,7 @@ async def get_marks_last_day(user: str) -> Dict[str, Any]:
         "subjects_with_marks": count_subjects_with_marks,
         "good_marks_total": count_good_marks,
         "subjects": all_subjects_data
-    }
+    } 
 
 
 async def get_homework(user: str) -> Dict[str, Any]:
