@@ -1,9 +1,4 @@
 .venv/
-app/assets/menu/main_events.jpg
-app/assets/menu/main_menu.jpg
-app/assets/menu/main_rasp.jpg
-app/assets/menu/main_settings.jpg
-app/assets/menu/settings_tech.jpg
 app/assets/schedule_test/calls.jpg
 app/assets/schedule_test/friday.jpg
 app/assets/schedule_test/monday.jpg

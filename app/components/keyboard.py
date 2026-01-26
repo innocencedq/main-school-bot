@@ -35,7 +35,7 @@ async def main_menu(user):
     builder.row(InlineKeyboardButton(text='🗓 Расписание', callback_data='rasp'), (InlineKeyboardButton(text='📒 Дневник', callback_data='main_diary')) if usage else InlineKeyboardButton(text='📒 Дневник', url='https://pwa.kiasuo.ru/'))
     # builder.add(InlineKeyboardButton(text='🎈 События', callback_data='events'))
     # builder.add(InlineKeyboardButton(text='📖 Исторические факты Великой Победы', callback_data='history'))
-    builder.add(InlineKeyboardButton(text='📋 Объявления', callback_data=f'advert-{advert_last_id}'))
+    builder.add(InlineKeyboardButton(text='📋 Объявления', callback_data=f'advert-{advert_last_id if advert_last_id else 0}'))
     builder.add(InlineKeyboardButton(text='⚪️ Официальная группа ВКонтакте', url='https://vk.com/public217585014'))
     builder.add(InlineKeyboardButton(text='⚙️ Настройки', callback_data='settings'))
     builder.add(InlineKeyboardButton(text='Админ панель', callback_data='adminpanel')) if admin else None

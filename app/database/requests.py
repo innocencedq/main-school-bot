@@ -13,6 +13,43 @@ async def get_all_users():
         users = await session.scalars(select(User.tg_id))
         users_id = users.all()
         return users_id
+    
+
+async def get_full_info_user(user, method: str = 'id'):
+    async with async_session() as session:
+        if method == 'id':
+            stmt = await session.scalar(select(User).where(User.tg_id == user))
+        elif method == 'username':
+            stmt = await session.scalar(select(User).where(User.username == user))
+
+        res = {
+            "id": stmt.id,
+            "tg_id": stmt.tg_id,
+            "username": stmt.username,
+            "date_started": stmt.date_started,
+            "notify_vk": stmt.notify_vk,
+            "quick_menu": stmt.quick_menu,
+            "requests_ai": stmt.requests_ai,
+            "refresh_token": stmt.refresh_token,
+            "access_token": stmt.access_token,
+            "shift": stmt.shift,
+            "extented_diary": stmt.extended_diary,
+            "tester": stmt.tester,
+            "notify_diary": stmt.notify_diary
+        }
+
+        return res
+    
+
+async def create_user(id, username):
+    async with async_session() as session:
+        username = username if username else "unspecific_user"
+        new_user = User(
+                     tg_id=id,
+                     username=username,)
+
+        session.add(new_user)
+        await session.commit()
 
 
 async def get_all_users_with_notify():
@@ -87,6 +124,15 @@ async def get_image(week_name):
         return res
     
 
+async def load_image(img_id, img_name):
+    async with async_session() as session:
+        new_image = Images(
+            image_id = img_id,
+            image_name = img_name
+        )
+        session.add(new_image)
+        await session.commit()
+
 async def del_image_from_redis(week_name):
     await redis.delete(f'week_name:{week_name}')
 
@@ -143,6 +189,7 @@ async def get_user_with_extended_diary(user):
     
 
 async def add_admin(telegram_id, username: str = None):
+    await redis.delete('check_admin:' + str(telegram_id))
     async with async_session() as session:
         new_adm = Admin(
                     tg_id=telegram_id,
@@ -193,7 +240,7 @@ async def get_last_advert_id():
             await redis.set(name='last:advert:id', value=str(stmt))
             return stmt
     else:
-        return int(res)
+        return int(res if res != b'None' else 0)
     
 
 async def refresh_last_advert_id():

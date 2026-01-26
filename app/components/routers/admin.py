@@ -393,7 +393,8 @@ async def title_process(message: Message, state: FSMContext):
 
             await message.answer('Теперь введите описание\n\n<b>Описание не должно превышать 650-ти символов!!!</b>', parse_mode='html')
             await state.set_state(AdvertManage.description_processing)
-    except Exception:
+    except Exception as e:
+        print(e)
         await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
         await state.set_state(AdvertManage.title_processing)
 
@@ -415,7 +416,8 @@ async def desc_process(message: Message, state: FSMContext):
                                     caption='Вы можете загрузить свое изображение или пропустить этот шаг. По умолчанию будет загружено изображение, которое прикреплено к сообщению', 
                                     reply_markup=advert_skip_picture)
             await state.set_state(AdvertManage.image_processing)
-    except Exception:
+    except Exception as e:
+        print(e)
         await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
         await state.set_state(AdvertManage.description_processing)
     

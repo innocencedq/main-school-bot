@@ -20,7 +20,8 @@ class Base(AsyncAttrs, DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
 
-    tg_id = Column(BigInteger, primary_key=True, unique=True, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, unique=True)
+    tg_id = Column(BigInteger, unique=True, nullable=False)
     username = Column(String, default='unspecified_username')
     date_started = Column(DateTime, default=lambda: datetime.now(pytz.timezone('Asia/Krasnoyarsk')))
     notify_vk = Column(Boolean, default=False)
