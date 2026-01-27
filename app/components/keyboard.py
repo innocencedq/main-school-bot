@@ -330,7 +330,7 @@ ann_admin = InlineKeyboardMarkup(inline_keyboard=[
 
 
 bug_report = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='📄 Тикет', callback_data='bug')], # InlineKeyboardButton(text='💡 Идея', callback_data='idea')],
+    # [InlineKeyboardButton(text='📄 Тикет', callback_data='bug')], # InlineKeyboardButton(text='💡 Идея', callback_data='idea')],
     # [InlineKeyboardButton(text='👷 Стать тестером', callback_data='add_test')],
     [InlineKeyboardButton(text='⬅️ Назад', callback_data='settings')]
 ])

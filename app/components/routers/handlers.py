@@ -1,23 +1,16 @@
 import os
 import asyncio
-import datetime
-import pytz
 from aiogram import Router, F
-from datetime import datetime
 from aiogram.types import Message, FSInputFile
 from aiogram.filters import CommandStart, Command
 from sqlalchemy import select, update
-from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from app.components.diary.parsing import refresh_token as rf
 from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
-from app.components.routers.callbacks import week_callback
-from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_list_admin, get_image, get_shift, load_image
-from app.database.data import async_session, User, Images, Static
-from app.components.keyboard import main_menu as keyboard_menu, ask_notify, ask_quick_menu
-from app.components.keyboard import back_main_2 as back
-from app.components.keyboard import for_vk_notify as kb_vk
+from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_image, get_shift, load_image
+from app.database.data import async_session, User, Static
+from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
 from config import welcome_message, PATH_TO_IMAGES, ADMIN_KEY
 

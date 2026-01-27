@@ -1,7 +1,7 @@
 import asyncio
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, InputMediaPhoto, FSInputFile, ReplyKeyboardRemove, Message
+from aiogram.types import CallbackQuery, InputMediaPhoto, ReplyKeyboardRemove, Message
 from aiogram.exceptions import TelegramBadRequest
 from sqlalchemy import update, select
 
@@ -11,9 +11,9 @@ from app.components.keyboard import main_menu as menu_keyboard
 from app.components.keyboard import settings_keyboard, back_main, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 import app.supportfunctions.main_utils as util
-from app.database.requests import check_admin, create_user, get_user_with_notify, get_all_users, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
+from app.database.requests import check_admin, create_user, get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
-from app.database.data import async_session, User, Static
+from app.database.data import async_session, User
 import app.database.requests as req
 
 from config import welcome_message, bug_report_message
@@ -101,7 +101,7 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
     user = callback.from_user.id
     
     await util.unauth_user_trap(user, callback.message.from_user.username)
-    
+
     if where == 'quick_menu':
         await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
     else:
@@ -180,7 +180,7 @@ async def quick_menu_callback(callback: CallbackQuery, state: FSMContext):
 @router_callback.callback_query(F.data == 'bug_report')
 async def bug_report_callback(callback: CallbackQuery):
     f = await get_image(week_name='settings_tech')
-    photo = InputMediaPhoto(media=f, caption=bug_report_message, parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption=bug_report_message + '\n<b>На данный момент тикеты не работают! По всем тех. вопросам, переходите в личные сообщения телеграмм канала!</b>', parse_mode='html')
 
     await callback.message.edit_media(media=photo, reply_markup=bug_report)
 
