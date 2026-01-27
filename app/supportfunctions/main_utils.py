@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 
 
 from app.components.keyboard import ScheduleKeyboards
-from app.database.requests import check_admin, create_user, get_image, load_image
+from app.database.requests import create_user, get_image, is_user_exists, load_image
 
 
 krasnoyarsk_tz = pytz.timezone('Asia/Krasnoyarsk')
@@ -77,8 +77,7 @@ async def loadschedule(method: str = 'firststart'):
     
 
 async def unauth_user_trap(user_id, username):
-    try:
-        await check_admin(user_id)
-    except Exception as e:
-        print(e)
+    if not await is_user_exists(user_id):
         await create_user(user_id, username)
+
+    return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'

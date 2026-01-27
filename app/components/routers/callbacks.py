@@ -3,15 +3,15 @@ from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, InputMediaPhoto, ReplyKeyboardRemove, Message
 from aiogram.exceptions import TelegramBadRequest
-from sqlalchemy import update, select
+from sqlalchemy import update
 
 from app.components.keyboard import bug_report, advert_kb
 from app.components.keyboard import ScheduleKeyboards
 from app.components.keyboard import main_menu as menu_keyboard
-from app.components.keyboard import settings_keyboard, back_main, notify
+from app.components.keyboard import settings_keyboard, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 import app.supportfunctions.main_utils as util
-from app.database.requests import check_admin, create_user, get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
+from app.database.requests import get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
 from app.database.data import async_session, User
 import app.database.requests as req
@@ -39,11 +39,10 @@ async def rasp_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     new_username = callback.from_user.username if callback.from_user.username else 'unspecific_user'
 
-    try:
-        await check_admin(user_id)
-    except Exception as e:
-        print(e)
-        await create_user(user_id, new_username)
+    res = await util.unauth_user_trap(user_id, new_username)
+
+    if res:
+        await callback.answer(res, True)
 
     f = await get_image(week_name='main_rasp')
     photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
@@ -100,7 +99,10 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
     photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', parse_mode='html')
     user = callback.from_user.id
     
-    await util.unauth_user_trap(user, callback.message.from_user.username)
+    res = await util.unauth_user_trap(user, callback.message.from_user.username)
+
+    if res:
+        await callback.answer(res, True)
 
     if where == 'quick_menu':
         await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')

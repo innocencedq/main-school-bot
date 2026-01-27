@@ -1,11 +1,9 @@
 from app.database.data import User, async_session, Admin, Images, Advert, ReportTicket
-from sqlalchemy import select, func, update, delete, desc, text
-from aiogram.types import Chat
+from sqlalchemy import exists, select, func, update, delete, desc, text
 
 from app.components.routers.tickets.topics import create_topic
 from app.components.logs.logs import logger
 from app.supportfunctions.redis_misc import redis
-from config import ZAGLUSHKA_FILE_ID
 
 
 async def get_all_users():
@@ -13,6 +11,14 @@ async def get_all_users():
         users = await session.scalars(select(User.tg_id))
         users_id = users.all()
         return users_id
+    
+
+async def is_user_exists(user_id: int) -> bool:
+    async with async_session() as session:
+        user_exists = await session.scalar(
+            select(exists().where(User.id == user_id))
+        )
+        return bool(user_exists)
     
 
 async def get_full_info_user(user, method: str = 'id'):

@@ -58,9 +58,9 @@ async def menu(message: Message, state: FSMContext):
     try:
         await message.delete()
         await state.clear()
-        await unauth_user_trap(message.from_user.id, message.from_user.username)
+        res = await unauth_user_trap(message.from_user.id, message.from_user.username)
         f = await get_image(week_name='main_menu')
-        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
+        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu\n\n" + res if res else '', reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
         print(e)
         await message.answer('❌')
