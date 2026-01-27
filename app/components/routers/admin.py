@@ -10,7 +10,7 @@ from sqlalchemy import update
 from app.components.routers.callbacks import back_callback
 from app.database.data import Images, async_session
 from app.database.requests import count_users, check_admin, advert_write_sql, refresh_last_advert_id, del_image_from_redis, get_all_data_about_advert, update_data_about_advert, \
-    deleting_data_about_advert, refresh_last_advert_id, get_image, add_admin, zaglushka_deploy
+    deleting_data_about_advert, refresh_last_advert_id, get_image, add_admin
 from app.components.keyboard import admin_panel, adm_back, adm_rasp, tech_works, confirm_adm, repeat_adm, \
     confirm_schedule, confirm_day, confirm_calls, send_own_message, manual_formatting, advert_manage_kb, advert_confirmed, \
     advert_skip_picture, advert_continue_picture, advert_edit_cancel, advert_editing, advert_continue_edit, adm_update_schedule \
