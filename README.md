@@ -65,7 +65,7 @@ sudo apt install python3.12 python3.12-venv python3.12-dev -y
 
 **Создайте альтернативную ссылку (если нужно):**
 ```bash
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
 ```
 
 ### 5. Установите npm и PM2
