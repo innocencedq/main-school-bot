@@ -71,7 +71,7 @@ async def adminpanel_callback(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer(f'<b>Админ панель</b>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
 
 
-@router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin']))
+@router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin', 'zaglushka_schedule']))
 async def callback(callback: CallbackQuery, state: FSMContext):
     if callback.data == 'notify_schedule':
         await callback.message.edit_text('<b>Выберите один из вариантов.</b>\n\n1. Обновление расписания на следующую неделю\n2. Обновить расписание на день недели\n3. Обновить расписание звонков\n4. Заполнить расписание заглушками', reply_markup=adm_rasp, parse_mode='html')
