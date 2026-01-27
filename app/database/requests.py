@@ -130,6 +130,13 @@ async def get_image(week_name):
         return res
     
 
+async def refresh_image(img_id, img_name):
+    async with async_session() as session:
+        stmt = update(Images).where(Images.image_name == img_name).values(image_id = img_id)
+        await session.execute(stmt)
+        await session.commit()
+    
+
 async def load_image(img_id, img_name):
     async with async_session() as session:
         new_image = Images(
