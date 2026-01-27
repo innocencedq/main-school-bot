@@ -255,6 +255,10 @@ async def deeployimages(message: Message):
 
         for filepath in files:
             image_name = filepath.split('.')[0]
+            
+            if image_name == 'calls':
+                image_name = 'schedule:calls'
+
             curr += 1
             remaining = abs(len_files - curr)
 
@@ -268,7 +272,7 @@ async def deeployimages(message: Message):
             await load_image(file_id, image_name)
         
         await message.answer('<b>Переход к загрузке заглушек на расписание!</b>', parse_mode='')
-        
+
         res = await loadschedule()
         await message.answer(res)
 
