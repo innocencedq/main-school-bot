@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 
 
 from app.components.keyboard import ScheduleKeyboards
-from app.database.requests import get_image, load_image
+from app.database.requests import check_admin, create_user, get_image, load_image
 
 
 krasnoyarsk_tz = pytz.timezone('Asia/Krasnoyarsk')
@@ -74,3 +74,11 @@ async def loadschedule(method: str = 'firststart'):
         return 'Successful intializing schedule images!'
     except Exception as e:
         return 'Failed initializing schedule images! Following initializing only in manual through database'
+    
+
+async def unauth_user_trap(user_id, username):
+    try:
+        await check_admin(user_id)
+    except Exception as e:
+        print(e)
+        await create_user(user_id, username)

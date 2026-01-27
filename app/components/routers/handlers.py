@@ -11,7 +11,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from app.components.diary.parsing import refresh_token as rf
-from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule
+from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
 from app.components.routers.callbacks import week_callback
 from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_list_admin, get_image, get_shift, load_image
 from app.database.data import async_session, User, Images, Static
@@ -65,6 +65,7 @@ async def menu(message: Message, state: FSMContext):
     try:
         await message.delete()
         await state.clear()
+        await unauth_user_trap(message.from_user.id, message.from_user.username)
         f = await get_image(week_name='main_menu')
         await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:

@@ -11,7 +11,7 @@ from app.components.keyboard import main_menu as menu_keyboard
 from app.components.keyboard import settings_keyboard, back_main, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 import app.supportfunctions.main_utils as util
-from app.database.requests import get_user_with_notify, get_all_users, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
+from app.database.requests import check_admin, create_user, get_user_with_notify, get_all_users, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
 from app.database.data import async_session, User, Static
 import app.database.requests as req
@@ -38,15 +38,12 @@ async def quick_settings_menu(callback: CallbackQuery):
 async def rasp_callback(callback: CallbackQuery):
     user_id = callback.from_user.id
     new_username = callback.from_user.username if callback.from_user.username else 'unspecific_user'
-    async with async_session() as session:
-        last_username = await session.scalar(select(User.username).where(User.tg_id == user_id))
 
-        if last_username != new_username:
-            stmt = update(User).where(User.tg_id == user_id).values(username = new_username)
-            stmt2 = update(Static).where(Static.id == 1).values(active_users = Static.active_users + 1)
-            await session.execute(stmt)
-            await session.execute(stmt2)
-            await session.commit()
+    try:
+        await check_admin(user_id)
+    except Exception as e:
+        print(e)
+        await create_user(user_id, new_username)
 
     f = await get_image(week_name='main_rasp')
     photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
@@ -99,25 +96,16 @@ async def shedule_change_shift(callback: CallbackQuery):
 #Настройки
 @router_callback.callback_query(F.data == 'settings')
 async def settings_callback(callback: CallbackQuery, where: str = None):
-    async with async_session() as session:
-        f = await get_image(week_name='main_settings')
-        photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', parse_mode='html')
-        user = callback.from_user.id
-
-        if user not in await get_all_users():
-            username = callback.from_user.username if callback.from_user.username else "unspecific_user"
-            new_user = User(
-                tg_id=user,
-                username=username,
-            )
-            session.add(new_user)
-            await session.commit()
-
-
-        if where == 'quick_menu':
-            await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
-        else:
-            await callback.message.edit_media(media=photo, reply_markup=await settings_keyboard(user=user))
+    f = await get_image(week_name='main_settings')
+    photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', parse_mode='html')
+    user = callback.from_user.id
+    
+    await util.unauth_user_trap(user, callback.message.from_user.username)
+    
+    if where == 'quick_menu':
+        await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
+    else:
+        await callback.message.edit_media(media=photo, reply_markup=await settings_keyboard(user=user))
 
 
 #Измена настроек
