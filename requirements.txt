@@ -55,9 +55,6 @@ PyRect==0.2.0
 PyScreeze==1.0.1
 pytweening==1.2.0
 pytz==2025.2
-pywin32==308
-pywin32-ctypes==0.2.3
-pywinauto==0.6.9
 redis==7.1.0
 repath==0.9.0
 requests==2.32.3
