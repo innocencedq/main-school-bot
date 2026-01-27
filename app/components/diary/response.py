@@ -48,9 +48,9 @@ async def get_info_mark(user, max_retries=2):
                     data = await response.json()
                     
                     if int(formatted_class) < 10:
-                        period_id = data[1]["id"]
+                        period_id = data[2]["id"]
                     else:
-                        period_id = data[0]["id"]
+                        period_id = data[1]["id"]
 
                 async with session.get(f"https://diaryapi.kiasuo.ru/diary/api/lesson_marks/{period_id}?id={id}", headers=headers) as response:
                     if response.status != 200 and response.status != 304:
