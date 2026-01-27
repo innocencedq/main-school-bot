@@ -80,4 +80,4 @@ async def unauth_user_trap(user_id, username):
     if not await is_user_exists(user_id):
         await create_user(user_id, username)
 
-    return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'
+        return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'
