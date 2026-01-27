@@ -16,7 +16,7 @@ async def get_all_users():
 async def is_user_exists(user_id: int) -> bool:
     async with async_session() as session:
         user_exists = await session.scalar(
-            select(exists().where(User.id == user_id))
+            select(exists().where(User.tg_id == user_id))
         )
         return bool(user_exists)
     
