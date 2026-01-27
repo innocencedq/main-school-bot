@@ -11,7 +11,7 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from app.components.diary.parsing import refresh_token as rf
-from app.supportfunctions.main_utils import get_week, get_fast_rasp
+from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule
 from app.components.routers.callbacks import week_callback
 from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_list_admin, get_image, get_shift, load_image
 from app.database.data import async_session, User, Images, Static
@@ -266,6 +266,11 @@ async def deeployimages(message: Message):
             file_id = msg.photo[-1].file_id
 
             await load_image(file_id, image_name)
+        
+        await message.answer('<b>Переход к загрузке заглушек на расписание!</b>', parse_mode='')
+        
+        res = await loadschedule()
+        await message.answer(res)
 
         await message.answer('<b>Настройка изображений закончена!</b>\n\nТеперь можно удалить сообщения с изображениями или очистить чат с ботом.', 
                             parse_mode='html')

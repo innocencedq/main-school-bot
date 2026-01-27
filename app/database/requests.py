@@ -362,16 +362,6 @@ async def check_status_topic(id, method: str):
             stmt = await session.scalar(select(ReportTicket.closed).where(ReportTicket.topic == id, ReportTicket.closed == False))
         
         return bool(stmt)
-    
-
-async def zaglushka_deploy():
-    async with async_session() as session:
-        days = ['monday', 'tuesday', 'wednesday', 'thrusday', 'friday']
-
-        for day in days:
-            stmt = (update(Images).where(Images.image_name == day).values(image_id=ZAGLUSHKA_FILE_ID))
-            await session.execute(stmt)
-        await session.commit()
 
 
 async def get_shift(id):

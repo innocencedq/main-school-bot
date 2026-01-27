@@ -18,6 +18,7 @@ from app.components.keyboard import admin_panel, adm_back, adm_rasp, tech_works,
 from app.components.routers.func_admin.keyboard_changer import ScheduleChangerKeyboard
 from app.components.notifyprocesses.notify import notify_update_schedule, technical_works, technical_works_finish, notify_rework_schedule, message_admin, notify_update_calls, \
     new_advert_notify
+from app.supportfunctions.main_utils import loadschedule
 
 
 router_adm = Router()
@@ -186,7 +187,7 @@ async def callback(callback: CallbackQuery, state: FSMContext):
 
     elif callback.data == 'zaglushka_schedule':
         await callback.message.answer('Начинаю заполнять расписание заглушками...')
-        await zaglushka_deploy()
+        await loadschedule(method='stubsload')
         await callback.message.answer('Расписание заполнено заглушками')
         await adminpanel_callback(callback, state)
 

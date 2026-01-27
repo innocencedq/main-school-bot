@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 
 
 from app.components.keyboard import ScheduleKeyboards
-from app.database.requests import get_image
+from app.database.requests import get_image, load_image
 
 
 krasnoyarsk_tz = pytz.timezone('Asia/Krasnoyarsk')
@@ -54,3 +54,23 @@ async def try_delete_msg_callback(callback: CallbackQuery):
         await callback.message.delete()
     except Exception:
         pass
+
+
+async def loadschedule(method: str = 'firststart'):
+    try:
+        if method == 'firststart':
+            week_days = ['schedule:1:monday', 'schedule:1:tuesday', 'schedule:1:wednesday', 'schedule:1:thursday', 'schedule:1:friday',
+                        'schedule:2:monday', 'schedule:2:tuesday', 'schedule:2:wednesday', 'schedule:2:thursday', 'schedule:2:friday',
+                        'schedule:calls']
+        elif method == 'stubsload':
+            week_days = ['schedule:1:monday', 'schedule:1:tuesday', 'schedule:1:wednesday', 'schedule:1:thursday', 'schedule:1:friday',
+                        'schedule:2:monday', 'schedule:2:tuesday', 'schedule:2:wednesday', 'schedule:2:thursday', 'schedule:2:friday',]
+
+        stub_id = await get_image(week_name='stub')
+
+        for day in week_days:
+            await load_image(img_id=stub_id, img_name=day)
+
+        return 'Successful intializing schedule images!'
+    except Exception as e:
+        return 'Failed initializing schedule images! Following initializing only in manual through database'
