@@ -61,7 +61,7 @@ async def auth_android_chrome(callback: CallbackQuery):
         await callback.message.edit_caption(caption=auth_ios, parse_mode='HTML', reply_markup=notify)
         await callback.message.answer("""javascript:(() => { const a = (JSON.parse(localStorage.getItem("auth-store") || "{}"))?.refreshToken; if (a) { window.location.href = `https://t.me/HelperSchool3bot?start=${a}`; } })();""", reply_markup=back_to_diary)
     elif callback.data == 'auth_pc':
-        file_id = await get_image('guide_pc')
+        # file_id = await get_image('guide_pc')
         auth_pc = "💻 <b>Вход через ПК</b>\n\n" \
                     """1️⃣ <b>Шаг 1:</b> Скопируйте код, после чего перейдите на сайт КИАСУО и авторизуйтесь <a href="https://pwa.kiasuo.ru/schedule">pwa.kiasuo.ru</a>\n""" \
                     """<pre>(() => { const a = (JSON.parse(localStorage.getItem("auth-store") || "{}"))?.refreshToken; if (a) { window.location.href = `https://t.me/HelperSchool3bot?start=${a}`; } })();</pre>\n""" \
@@ -70,8 +70,9 @@ async def auth_android_chrome(callback: CallbackQuery):
                     "4️⃣ <b>Шаг 4</b>: После перезагрузки страницы у Вас появиться маленькое окно, нажмите 'Открыть с помощью Telegram'\n\n" \
                     "<b>Пошаговое выполнение показано в видеоинструкции</b>\n\n" \
                     "⁉️ <b>На стороне сервера храниться лишь Ваш refreshToken и accessToken, позволяющие брать данные оценок!</b>"
-        video = InputMediaVideo(media=file_id, caption=auth_pc, parse_mode='HTML')
-        await callback.message.edit_media(media=video, reply_markup=back_to_diary, parse_mode='HTML')
+        # video = InputMediaVideo(media=file_id, caption=auth_pc, parse_mode='HTML')
+        # await callback.message.edit_media(media=video, reply_markup=back_to_diary, parse_mode='HTML')
+        await callback.message.edit_caption(caption=auth_pc, parse_mode='HTML', reply_markup=notify)
         
 
 @callback_diary.callback_query(F.data == 'get_homework')
