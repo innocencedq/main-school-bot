@@ -89,7 +89,7 @@ async def preprocess_sending(message: Message, state: FSMContext):
             await state.clear()
     else:
         await message.answer(
-            '🤔 <b>Пользователь не найден...</b>\n\n'
+            '🤔 <b>Пользователь не найден, но...</b>\n\n'
             'Не переживайте! Когда пользователь впервые запустит бота, '
             'он получит уведомление о вашей валентинке.\n\n'
             'Теперь напишите текст валентинки ✍️',
