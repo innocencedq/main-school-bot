@@ -397,3 +397,15 @@ async def ege(message: Message):
                         '❗️<b>В расписании указан основной период сдачи экзамена</b>',
                          parse_mode='html', 
                          reply_markup=hide)
+    
+
+@router.message(Command('getlogs'))
+async def getlogs(message: Message):
+    if await check_admin(message.from_user.id):
+        files = os.listdir(PATH_TO_IMAGES)
+        for filename in files:
+            if filename == 'logs.log':
+                media = FSInputFile(path=PATH_TO_IMAGES, filename=filename)
+                await message.answer_document(media, caption='Выгруженные логи')
+    else:
+        await message.answer('У вас не хватает прав!')

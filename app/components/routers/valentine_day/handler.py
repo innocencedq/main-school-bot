@@ -375,3 +375,4 @@ async def sending_valentine(method: str, receiver, sender, message):
         await logger.error(f'Ошибка в sending_valentine: {e}')
         await utils.send_error_to_adm(f'Ошибка в sending_valentine\n\n{e}')
         return 'failed'
+        
