@@ -401,11 +401,14 @@ async def ege(message: Message):
 
 @router.message(Command('getlogs'))
 async def getlogs(message: Message):
+    PATH_TO_LOGS = 'app/components/logs/'
     if await check_admin(message.from_user.id):
-        files = os.listdir(PATH_TO_LOGS)
-        for filename in files:
-            if filename == 'logs.log':
-                media = FSInputFile(path=PATH_TO_LOGS, filename=filename)
-                await message.answer_document(media, caption='Выгруженные логи')
+        log_file_path = os.path.join(PATH_TO_LOGS, 'logs.log')
+        
+        if os.path.exists(log_file_path):
+            media = FSInputFile(path=log_file_path, filename='logs.log')
+            await message.answer_document(media, caption='Выгруженные логи')
+        else:
+            await message.answer('Файл логов не найден')
     else:
         await message.answer('У вас не хватает прав!')
