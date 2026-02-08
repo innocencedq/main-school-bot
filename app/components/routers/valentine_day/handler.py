@@ -32,7 +32,6 @@ async def preprocess_sending(message: Message, state: FSMContext):
         return
 
     text = message.text
-    await logger.info(text)
 
     if '@' in text:
         username = text.replace('@', '')

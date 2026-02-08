@@ -52,7 +52,7 @@ async def adminpanel(message: Message):
     count = await count_users()
     is_admin = await check_admin(message.from_user.id)
     if is_admin:
-        await message.answer(f'<b>Админ панель</b>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
     else:
         await message.answer('Вы не администратор!')
 
