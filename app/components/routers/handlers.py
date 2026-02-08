@@ -13,7 +13,7 @@ from app.database.requests import add_admin, check_admin, get_all_users, get_dev
 from app.database.data import async_session, User
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
-from config import welcome_message, PATH_TO_IMAGES, ADMIN_KEY
+from config import PATH_TO_LOGS, welcome_message, PATH_TO_IMAGES, ADMIN_KEY
 
 router = Router()
 
@@ -402,10 +402,10 @@ async def ege(message: Message):
 @router.message(Command('getlogs'))
 async def getlogs(message: Message):
     if await check_admin(message.from_user.id):
-        files = os.listdir(PATH_TO_IMAGES)
+        files = os.listdir(PATH_TO_LOGS)
         for filename in files:
             if filename == 'logs.log':
-                media = FSInputFile(path=PATH_TO_IMAGES, filename=filename)
+                media = FSInputFile(path=PATH_TO_LOGS, filename=filename)
                 await message.answer_document(media, caption='Выгруженные логи')
     else:
         await message.answer('У вас не хватает прав!')
