@@ -14,7 +14,7 @@ from app.supportfunctions.badwords_checker import SimpleProfanityFilter
 router = Router()
 
 
-router.message(St.ValentineProcess.waiting_username)
+@router.message(St.ValentineProcess.waiting_username)
 async def preprocess_sending(message: Message, state: FSMContext):
     typeof = message.content_type
     
