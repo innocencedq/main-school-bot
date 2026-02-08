@@ -62,13 +62,13 @@ async def adminpanel_callback(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     count = await count_users()
     try:
-        await callback.message.edit_text(f'<b>Админ панель</b>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await callback.message.edit_text(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
     except Exception:
         try:
             await callback.message.delete()
         except TelegramBadRequest:
             pass
-        await callback.message.answer(f'<b>Админ панель</b>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await callback.message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
 
 
 @router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin', 'zaglushka_schedule']))
