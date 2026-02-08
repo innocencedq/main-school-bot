@@ -25,7 +25,6 @@ async def check_new_user_valentines_Message(message: Message):
                 
                 notification_text = f"🕒 <b>Пока вас не было...</b>\n\n✨ Вам пришло <b>{total_count}</b> {word}!"
 
-            await asyncio.sleep(10)
             await message.answer(text=notification_text, 
                                  reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='📖 Посмотреть', callback_data=f'valentine:my_valentines:{last_valentine_id}')],
@@ -58,7 +57,6 @@ async def check_new_user_valentines_CallbackQuery(callback: CallbackQuery):
                 
                 notification_text = f"🕒 <b>Пока вас не было...</b>\n\n✨ Вам пришло <b>{total_count}</b> {word}!"
 
-            await asyncio.sleep(10)
             await callback.message.answer(text=notification_text,
                                           reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                     [InlineKeyboardButton(text='📖 Посмотреть', callback_data=f'valentine:my_valentines:{last_valentine_id}')],
