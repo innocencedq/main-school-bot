@@ -25,13 +25,14 @@ async def preprocess_sending(message: Message, state: FSMContext):
             '• @username\n'
             '• https://t.me/username\n'
             '• просто username\n\n'
-            '<i>Если у пользователя нет юзернейма, он отображается как "не установлен"</i>',
+            '<i>Если у пользователя нет юзернейма, то отправить не получится!</i>',
             parse_mode='html'
         )
         await state.set_state(St.ValentineProcess.waiting_username)
         return
 
     text = message.text
+    print(text)
 
     if '@' in text:
         username = text.replace('@', '')
