@@ -50,9 +50,11 @@ async def preprocess_sending(message: Message, state: FSMContext):
             'Пожалуйста, выберите другого получателя.',
             parse_mode='html',
             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text='📤 Отправить другому', callback_data='valentine:send_valentine')],
                 [InlineKeyboardButton(text='⬅️ Назад', callback_data='valentine_day')]
             ])
         )
+        await state.clear()
         return
 
     if is_user:
@@ -84,6 +86,7 @@ async def preprocess_sending(message: Message, state: FSMContext):
                     [InlineKeyboardButton(text='⬅️ Назад', callback_data='valentine_day')]
                 ])
             )
+            await state.clear()
     else:
         await message.answer(
             '🤔 <b>Пользователь не найден...</b>\n\n'
