@@ -10,6 +10,7 @@ from app.components.keyboard import ScheduleKeyboards
 from app.components.keyboard import main_menu as menu_keyboard
 from app.components.keyboard import settings_keyboard, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
+from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_CallbackQuery
 import app.supportfunctions.main_utils as util
 from app.database.requests import get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
@@ -43,6 +44,7 @@ async def rasp_callback(callback: CallbackQuery):
 
     if res:
         await callback.answer(res, True)
+        await check_new_user_valentines_CallbackQuery(callback=callback)
 
     f = await get_image(week_name='main_rasp')
     photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
@@ -103,6 +105,8 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
 
     if res:
         await callback.answer(res, True)
+        await check_new_user_valentines_CallbackQuery(callback=callback)
+
 
     if where == 'quick_menu':
         await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
@@ -316,3 +320,9 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
 async def help_with_schedule(callback: CallbackQuery) -> None:
     await callback.message.answer(f'<b>⚠️ Неточности в расписании</b>\n\nВы можете помочь боту, скинув текущее расписание в личку <a href="https://t.me/HelperSchool3News">телеграмм канала</a> (в левом нижмем углу кнопка сообщения).', parse_mode='html', reply_markup=notify)
     await callback.answer('Удачно!')
+
+
+@router_callback.callback_query(F.data == 'change_admin_rank')
+async def change_admin_rank(callback: CallbackQuery):
+    res = await req.update_status_developer(callback.from_user.id, callback.from_user.username)
+    await callback.answer('✅ Вы стали Разработчиком' if res == 'developer' else '✅ Вы стали Администратором')

@@ -4,7 +4,7 @@ from aiogram.types import CallbackQuery
 
 
 from app.components.keyboard import ScheduleKeyboards
-from app.database.requests import create_user, get_image, is_user_exists, load_image, refresh_image
+from app.database.requests import create_user, get_developer_chat_id, get_image, is_user_exists, load_image, refresh_image
 
 
 krasnoyarsk_tz = pytz.timezone('Asia/Krasnoyarsk')
@@ -87,3 +87,47 @@ async def unauth_user_trap(user_id, username):
         await create_user(user_id, username)
 
         return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'
+    
+
+async def send_error_to_adm(error):
+    chat_id = await get_developer_chat_id()
+
+    from run import bot
+    await bot.send_message(chat_id=chat_id, text=f'<b>Ошибка при исполнении</b>\n\n<pre language="python">{error[:4000]}</pre>')
+
+
+async def pagination(items, curr_id):
+    """
+    Returned:
+        - next_id (int or None)
+        - prev_id (int or None)
+        - curr_idx (int)
+    """
+    index_dict = {index: value for index, value in enumerate(items)}
+    
+    next_idx = None
+    prev_idx = None
+    curr_idx = 0
+    
+    for index, value in index_dict.items():
+        if value == int(curr_id):
+            curr_idx = index
+            
+            if index == 0:
+                prev_idx = None
+                next_idx = 1 if len(index_dict) > 1 else None
+            elif index == len(index_dict) - 1:
+                prev_idx = index - 1
+                next_idx = None
+            else:
+                prev_idx = index - 1
+                next_idx = index + 1
+            break
+
+    if curr_idx == -1:
+        return None, None, -1
+
+    next_id = index_dict.get(next_idx)
+    prev_id = index_dict.get(prev_idx)
+    
+    return prev_id, next_id, curr_idx

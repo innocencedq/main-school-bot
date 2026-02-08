@@ -1,15 +1,16 @@
 import os
 import asyncio
 from aiogram import Router, F
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import CommandStart, Command
 from sqlalchemy import select, update
 from aiogram.fsm.context import FSMContext
 
 from app.components.diary.parsing import refresh_token as rf
+from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_Message
 from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
-from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_image, get_shift, load_image
-from app.database.data import async_session, User, Static
+from app.database.requests import add_admin, check_admin, get_all_users, get_developer_chat_id, get_full_info_user, get_image, get_shift, load_image
+from app.database.data import async_session, User
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
 from config import welcome_message, PATH_TO_IMAGES, ADMIN_KEY
@@ -45,6 +46,8 @@ async def start(message: Message, state: FSMContext):
 
                 session.add(new_user)
                 await session.commit()
+                await check_new_user_valentines_Message(message=message)
+
         await quick_settings_notify(message=message)
 
 
@@ -59,8 +62,12 @@ async def menu(message: Message, state: FSMContext):
         await message.delete()
         await state.clear()
         res = await unauth_user_trap(message.from_user.id, message.from_user.username)
+
+        if res:
+            await check_new_user_valentines_Message(message=message)
+
         f = await get_image(week_name='main_menu')
-        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu\n\n" + res if res else '', reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
+        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu\n\n" + (res if res else ''), reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
         print(e)
         await message.answer('❌')
@@ -85,6 +92,9 @@ async def givemefromdatabase(message: Message):
     tester = data.get('tester')
     notify_diary = data.get('notify_diary')
     is_admin = await check_admin(message.from_user.id)
+    allow_valentines = data.get('allow_valentines')
+
+    developer_chat_id = await get_developer_chat_id()
 
     text = (f"👤 <b>{message.from_user.first_name}</b>\n\n"
             f"🧷 ID: <code>{id}</code>\n"
@@ -100,11 +110,23 @@ async def givemefromdatabase(message: Message):
             f"🧷 Расширенный дневник: <b>{'Выключен' if extented_diary == 0 else 'Включен'}</b>\n"
             f"🧷 Права тестера: <b>{'Нету' if tester == 0 else 'Есть'}</b>\n"
             f"🧷 Уведомления дневника: <b>{'Выключены' if notify_diary == 0 else 'Включены'}</b>\n"
-            f"🧷 Права доступа: <b>{'Пользователь' if not is_admin else 'Администратор'}</b>\n")
+            f"🧷 Права доступа: <b>{'Пользователь' if not is_admin else 'Администратор' if tg_id != developer_chat_id else 'Разработчик'}</b>\n"
+            f"🧷 Статус День святого Валентина: <b>{'Принятие валентинок включено' if allow_valentines else 'Принятие валентинок отключено'}</b>")
+    
+    if is_admin and developer_chat_id != tg_id:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Стать разработчиком', callback_data='change_admin_rank')],
+            [InlineKeyboardButton(text='Скрыть', callback_data='hide')]
+        ])
+    elif developer_chat_id == tg_id:
+        kb = InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text='Стать администратором', callback_data='change_admin_rank')],
+            [InlineKeyboardButton(text='Скрыть', callback_data='hide')]
+        ])
 
 
 
-    await message.answer(text, parse_mode='html', reply_markup=hide)
+    await message.answer(text, parse_mode='html', reply_markup=kb if is_admin else hide)
 
 
 @router.message(Command('getuser'))
@@ -140,6 +162,7 @@ async def get_user_info(message: Message):
         tester = data.get('tester')
         notify_diary = data.get('notify_diary')
         rights = await check_admin(user)
+        allow_valentines = data.get('allow_valentines')
 
         text = (f"👤 <b>{first_name}</b>\n\n"
                 f"🧷 ID: <code>{id}</code>\n"
@@ -155,7 +178,8 @@ async def get_user_info(message: Message):
                 f"🧷 Расширенный дневник: <b>{'Выключен' if extented_diary == 0 else 'Включен'}</b>\n"
                 f"🧷 Права тестера: <b>{'Нету' if tester == 0 else 'Есть'}</b>\n"
                 f"🧷 Уведомления дневника: <b>{'Выключены' if notify_diary == 0 else 'Включены'}</b>\n"
-                f"🧷 Права доступа: <b>{'Пользователь' if not rights else 'Администратор'}</b>\n")
+                f"🧷 Права доступа: <b>{'Пользователь' if not rights else 'Администратор'}</b>\n"
+                f"🧷 Статус День святого Валентина: <b>{'Принятие валентинок включено' if allow_valentines else 'Принятие валентинок отключено'}</b>")
         
 
         await message.answer(text, parse_mode='html', reply_markup=hide)
@@ -205,9 +229,7 @@ async def week_quick_callback(message: Message):
         
         if last_username != new_username:
             stmt = update(User).where(User.tg_id == user_id).values(username = new_username)
-            stmt2 = update(Static).where(Static.id == 1).values(active_users = Static.active_users + 1)
             await session.execute(stmt)
-            await session.execute(stmt2)
             await session.commit()
     try:
         week = await get_week()
@@ -292,3 +314,86 @@ async def givemeadm(message: Message):
         await message.answer('<b>Неверный ключ!</b>', parse_mode='html')
 
 
+@router.message(Command('getphotofileid'))
+async def getphotofileid(message: Message):
+    if await check_admin(message.from_user.id):
+        file_id = message.text.split()[1]
+        try:
+            await message.answer_photo(photo=file_id, caption=file_id)
+        except Exception as e:
+            await message.answer('Данная команда используется, только для проверки фото! Пример -> /getphotofileid <file_id>')
+    else:
+        await message.answer('У вас не хватает прав!')
+
+
+
+@router.message(Command('getvideofileid'))
+async def getphotofileid(message: Message):
+    if await check_admin(message.from_user.id):
+        file_id = message.text.split()[1]
+        try:
+            await message.answer_video(video=file_id, caption=file_id)
+        except Exception as e:
+            await message.answer('Данная команда используется, только для проверки видео! Пример -> /getvideofileid <file_id>')
+    else:
+        await message.answer('У вас не хватает прав!')
+
+
+
+@router.message(Command('getsticker'))
+async def getphotofileid(message: Message):
+    if await check_admin(message.from_user.id):
+        file_id = message.text.split()[1]
+        try:
+            await message.answer_sticker(sticker=file_id)
+        except Exception as e:
+            await message.answer('Данная команда используется, только для проверки стикера! Пример -> /getsticker <file_id>')
+    else:
+        await message.answer('У вас не хватает прав!')
+
+
+
+@router.message(Command('getaudiofileid'))
+async def getphotofileid(message: Message):
+    if await check_admin(message.from_user.id):
+        file_id = message.text.split()[1]
+        try:
+            await message.answer_photo(photo=file_id, caption=file_id)
+        except Exception as e:
+            await message.answer('Данная команда используется, только для проверки аудио! Пример -> /getaudiofileid <file_id>')
+    else:
+        await message.answer('У вас не хватает прав!')
+
+
+@router.message(Command('oge'))
+async def oge(message: Message):
+    await message.delete()
+    await message.answer('🗓 <b>Расписание ОГЭ</b>: 2 июня - 6 июля.\n\n'
+                        '<b>2 июня</b> – математика\n' \
+                        '<b>6 июня</b> – информатика и иностранные языки\n' \
+                        '<b>9 июня</b> – русский язык\n' \
+                        '<b>5, 16 и 19 июня</b> – все предметы, за исключением русского языка и математики\n' \
+                        '<b>29 июня</b> запланирован резервный день для сдачи экзамена по математике\n' \
+                        '<b>2 июля</b> – для сдачи экзамена по русскому языку\n' \
+                        '<b>3 и 6 июля</b> – для сдачи экзамена по всем учебным предметам, кроме русского языка и математики.\n\n' \
+                        '❗️<b>В расписании указан основной период сдачи экзамена</b>',
+                         parse_mode='html', 
+                         reply_markup=hide)
+    
+
+
+@router.message(Command('ege'))
+async def ege(message: Message):
+    await message.delete()
+    await message.answer('🗓 <b>Расписание ЕГЭ:</b> 1 июня – 9 июля.\n\n' \
+                        '<b>1 июня</b> – история, литература, химия\n' \
+                        '<b>4 июня</b> – русский язык\n' \
+                        '<b>8 июня</b> – математика (база и профиль)\n' \
+                        '<b>11 июня</b> – обществознание, физика\n' \
+                        '<b>15 июня</b> – биология, география, письменная часть иностранных языков\n' \
+                        '<b>18–19 июня</b> – информатика и устная часть иностранных языков\n' \
+                        '<b>22–25 июня</b> – резервные дни по всем предметам\n' \
+                        '<b>8–9 июля</b> – пересдачи по выбору\n\n' \
+                        '❗️<b>В расписании указан основной период сдачи экзамена</b>',
+                         parse_mode='html', 
+                         reply_markup=hide)

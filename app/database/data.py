@@ -32,7 +32,8 @@ class User(Base):
     shift: Mapped[int] = mapped_column(default=1)
     extended_diary = Column(Boolean, default=False)
     tester = Column(Boolean, default=False)
-    notify_diary: Mapped[bool] = mapped_column(default=False) 
+    notify_diary: Mapped[bool] = mapped_column(default=False)
+    allow_valentines: Mapped[bool] = mapped_column(default=True) 
 
 
 class Admin(Base):
@@ -48,13 +49,6 @@ class Images(Base):
     id: Mapped[int] = mapped_column(primary_key=True, unique=True, nullable=False)
     image_id: Mapped[str] = mapped_column(unique=False)
     image_name: Mapped[str] = mapped_column()
-
-
-class Static(Base):
-    __tablename__ = 'static'
-
-    id: Mapped[int] = mapped_column(primary_key=True, unique=True, nullable=False)
-    active_users: Mapped[int] = mapped_column()
 
 
 class Advert(Base):
@@ -75,6 +69,27 @@ class ReportTicket(Base):
     from_id: Mapped[int] = mapped_column(BigInteger)
     closed: Mapped[bool] = mapped_column(Boolean, default=False)
     topic: Mapped[str] = mapped_column()
+
+
+class Valentines(Base):
+    __tablename__ = 'valentines'
+
+    id: Mapped[int] = mapped_column(primary_key=True, nullable=False, unique=True)
+    receiver_id: Mapped[str] = mapped_column()
+    sender_id: Mapped[int] = mapped_column(BigInteger)
+    message: Mapped[str] = mapped_column()
+    is_read: Mapped[bool] = mapped_column(default=False)
+    may_react: Mapped[bool] = mapped_column(default=True)
+
+
+class InprocessValentines(Base):
+    __tablename__ = 'in_process_valentines'
+
+    id: Mapped[int] = mapped_column(primary_key=True, nullable=False, unique=True)
+    receiver_username: Mapped[int] = mapped_column(BigInteger)
+    sender_id: Mapped[int] = mapped_column(BigInteger)
+    message: Mapped[str] = mapped_column()
+    is_read: Mapped[bool] = mapped_column(default=False)
 
 
 async def async_main():
