@@ -350,7 +350,8 @@ async def sending_valentine(method: str, receiver, sender, message):
                      'Кто-то отправил вам сердечное послание 💖',
                 parse_mode='html',
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                    [InlineKeyboardButton(text='📖 Посмотреть', callback_data=f'valentine:my_valentines:{valentine_id}')]
+                    [InlineKeyboardButton(text='📖 Посмотреть', callback_data=f'valentine:my_valentines:{valentine_id}')],
+                    [InlineKeyboardButton(text='♻️ Скрыть', callback_data='hide')]
                 ])
             )
             
