@@ -14,8 +14,8 @@ router_inline_mode = Router()
 async def inline_inline_query(query: InlineQuery):
     text = query.query.lower()
     chat_id = query.from_user.id
+    shift_user = await req.get_shift(chat_id)
     result_id: str = hashlib.md5(text.encode('utf-8')).hexdigest()
-    shift_user = req.get_shift(chat_id)
 
     if text in ['понедельник', 'пн']:
         week_name = f'schedule:{shift_user}:monday'
