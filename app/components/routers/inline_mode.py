@@ -3,6 +3,8 @@ import hashlib
 from aiogram import Router
 from aiogram.types import InlineQuery, InlineQueryResultCachedPhoto, InlineQueryResultArticle, InputTextMessageContent
 
+import app.database.requests as req
+
 from app.database.requests import get_image
 
 router_inline_mode = Router()
@@ -11,10 +13,12 @@ router_inline_mode = Router()
 @router_inline_mode.inline_query()
 async def inline_inline_query(query: InlineQuery):
     text = query.query.lower()
+    chat_id = query.from_user.id
     result_id: str = hashlib.md5(text.encode('utf-8')).hexdigest()
+    shift_user = req.get_shift(chat_id)
 
     if text in ['понедельник', 'пн']:
-        week_name = 'monday'
+        week_name = f'schedule:{shift_user}:monday'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
@@ -29,7 +33,7 @@ async def inline_inline_query(query: InlineQuery):
         await query.answer(results=[result], cache_time=1, is_personal=True)
 
     elif text in ['вторник', 'вт']:
-        week_name = 'tuesday'
+        week_name = f'schedule:{shift_user}:tuesday'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
@@ -44,7 +48,7 @@ async def inline_inline_query(query: InlineQuery):
         await query.answer(results=[result], cache_time=1, is_personal=True)
 
     elif text in ['среда', 'ср']:
-        week_name = 'wednesday'
+        week_name = f'schedule:{shift_user}:wednesday'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
@@ -59,7 +63,7 @@ async def inline_inline_query(query: InlineQuery):
         await query.answer(results=[result], cache_time=1, is_personal=True)
 
     elif text in ['четверг', 'чт']:
-        week_name = 'thrusday'
+        week_name = f'schedule:{shift_user}:thrusday'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
@@ -74,7 +78,7 @@ async def inline_inline_query(query: InlineQuery):
         await query.answer(results=[result], cache_time=1, is_personal=True)
 
     elif text in ['пятница', 'пт']:
-        week_name = 'friday'
+        week_name = f'schedule:{shift_user}:friday'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
@@ -89,7 +93,7 @@ async def inline_inline_query(query: InlineQuery):
         await query.answer(results=[result], cache_time=1, is_personal=True)
 
     elif text in ['звонки', 'зв', 'zv']:
-        week_name = 'calls'
+        week_name = f'schedule:calls'
         file_id = await get_image(week_name)
 
         result = InlineQueryResultCachedPhoto(
