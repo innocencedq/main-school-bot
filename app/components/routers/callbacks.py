@@ -264,7 +264,7 @@ async def week_callback(callback: CallbackQuery):
     day_data = {
         'monday': ('<b>🗓 Расписание на понедельник</b>', ScheduleKeyboards.monday(shift=str(user_shift))),
         'tuesday': ('<b>🗓 Расписание на вторник</b>', ScheduleKeyboards.tuesday(shift=str(user_shift))),
-        'wednesday': ('<b>🗓 Расписание на среду</b>', ScheduleKeyboards.wednesday(shift=str(user_shift))),
+        'wednesday': ('<b>🗓 Расписание на среду</b>\n\n‼️ Расписание <i>пятых, шестых, седьмых, восьмых, десятых и одиннадцатых классов</i> перенесены во вторую смену!\n‼️ Расписание <i>первых, вторых, третьих и четвертых классов</i> перенесены в первую смену!', ScheduleKeyboards.wednesday(shift=str(user_shift))),
         'thursday': ('<b>🗓 Расписание на четверг</b>', ScheduleKeyboards.thursday(shift=str(user_shift))),
         'friday': ('<b>🗓 Расписание на пятницу</b>', ScheduleKeyboards.friday(shift=str(user_shift))),
         'calls': ('<b>🔔 Расписание звонков</b>', ScheduleKeyboards.calls())
