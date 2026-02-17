@@ -135,25 +135,38 @@ pip install -r requirements.txt
 
 ### 11. Создайте файл config.py
 ```bash
+cd main-school-bot
 nano config.py
 ```
 
-### 12. Скопируйте и вставьте следующий код, заменив значения на свои (незабудьте создать бота в BotFather в телеграме):
+### 12. Скопируйте и вставьте следующий код, заменив значения на свои (не забудьте создать бота в BotFather в телеграме):
 ```python
-tg_token = 'ТОКЕН ТЕЛЕГРАМ БОТА BOTFATHER'
+tg_token = 'ТОКЕНТ_ТЕЛЕГРАММ_БОТА'
 vk_token = 'vk1.a.bKyXyYQTgmRDJ3kHl-FX85gXSf4IQqHaIFCDJBAl5EOtQaW2Fso98VZioJ8LLdPkaQwzs0r3HU8GVadtSq1p3SjggmFiizk_FSBktWrgp4cBz8hqgKwHQChbCvodc87K2zUkAX2IYM7IYlwVpBgcO4L8sUCFh2Johjw6HRvJD5ZYbWAFRdBhSjvwU4EjQb-lalnkFmGCb3Pln7iAoRQN7A'
 sqlalchemy_url = 'sqlite+aiosqlite:///./database.db'
-welcome_message = '\nДобро пожаловать в бота "Школьный помощник" школы №3!\nЗдесь ты можешь узнать расписание уроков, важные объявления и многое другое.\n\n<b>Давай сделаем школьную жизнь проще и удобнее!</b>'
+welcome_message = '\nДобро пожаловать в бота "Школьный помощник" школы №3!\nЗдесь ты можешь узнать расписание уроков, важные объявления и многое другое.\n\n<b>Давай сделаем школьную жизнь проще и удобнее!</b>\n\n📄 <b>Расписание экзаменов ОГЭ/ЕГЭ:</b> /oge , /ege'
 bug_report_message = '<b>🛠 Технический раздел</b> \n\nЕсли вы заметили баг или у вас есть идея, опишите ее, создав тикет\n\n<a href="https://t.me/HelperSchool3News">Школьный помощник | Новости</a>'
 DEEPSEEK_API = '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'
 woman_day = 0
-ZAGLUSHKA_FILE_ID = 'None'
+ZAGLUSHKA_FILE_ID = 'AgACAgIAAxkBAAIeNWirWFfkmEgH5lbij6aHzIWNk-DjAALL-DEbC81hSev9FAikN4uWAQADAgADeQADNgQ'
 PATH_TO_IMAGES = 'app/assets/menu/'
+PATH_TO_LOGS = 'app/components/logs/'
 ADMIN_KEY = 'd602355c4067de332bc3ae4de68f206e'
 ```
 
 **Сохраните файл:**  
 Нажмите `Ctrl+X`, затем `Y`, затем `Enter`.
+
+**Расписание экзаменов ОГЭ/ЕГЭ редактируется чезре прямой путь**
+
+*Для редактирование используйте nano (расписание находятся в самом конце)*
+
+```
+cd main-school-bot
+nano app/components/routers/handlers.py
+```
+
+*После сохраните файл, также как написано выше*
 
 ---
 
