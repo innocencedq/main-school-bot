@@ -38,7 +38,7 @@ async def main_menu(user):
     builder.add(InlineKeyboardButton(text='📋 Объявления', callback_data=f'advert-{advert_last_id if advert_last_id else 0}'))
     builder.add(InlineKeyboardButton(text='⚪️ Официальная группа ВКонтакте', url='https://vk.com/public217585014'))
     builder.add(InlineKeyboardButton(text='⚙️ Настройки', callback_data='settings'))
-    builder.add(InlineKeyboardButton(text='📮 День святого Валентина',callback_data='valentine_day'))
+    # builder.add(InlineKeyboardButton(text='📮 День святого Валентина',callback_data='valentine_day'))
     builder.add(InlineKeyboardButton(text='Админ панель', callback_data='adminpanel')) if admin else None
 
     return builder.adjust(2, 1).as_markup()
