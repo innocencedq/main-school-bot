@@ -93,7 +93,7 @@ async def send_error_to_adm(error):
     chat_id = await get_developer_chat_id()
 
     from run import bot
-    await bot.send_message(chat_id=chat_id, text=f'<b>Ошибка при исполнении</b>\n\n<pre language="python">{error[:4000]}</pre>')
+    await bot.send_message(chat_id=chat_id, text=f'<b>Ошибка при исполнении</b>\n\n<pre language="python">{error[:4000]}</pre>', parse_mode='html')
 
 
 async def pagination(items, curr_id):
