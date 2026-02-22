@@ -17,7 +17,7 @@ async def main_valentine(user_id, first_name):
     builder.add(InlineKeyboardButton(text=f'👤 {first_name}', callback_data='valentine:profile'))
     builder.add(InlineKeyboardButton(text='💌 Отправить валентинку', callback_data='valentine:send_valentine'))
     builder.add(InlineKeyboardButton(text='📩 Мои валентинки ' + (f'({unread_val})' if unread_val != 0 else ''), callback_data=f'valentine:my_valentines:{last_id if data_ids else 0}'))
-    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back'))
+    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary'))
 
     return builder.adjust(1, 1).as_markup()
 
@@ -44,6 +44,6 @@ async def valentine_scroller(curr_id, sender_id, may_react, receiver_id):
     builder.add(InlineKeyboardButton(text='💬 Отреагировать',
                                      callback_data=f'valentine:react_valentine:{sender_id}:{curr_id}:{receiver_id}')) if may_react else None
     builder.add(InlineKeyboardButton(text='⬅️ Назад',
-                                     callback_data='valentine_day'))
+                                     callback_data='valentine_day', style='primary'))
     
     return builder.adjust(adjust_param, 1, 1).as_markup()

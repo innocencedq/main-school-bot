@@ -48,7 +48,7 @@ async def reproccess_tasks(callback: CallbackQuery, state: FSMContext):
 
         await callback.message.edit_media(media=photo, 
                                           reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                                          [InlineKeyboardButton(text='⬅️ Назад', callback_data='valentine_day')]
+                                          [InlineKeyboardButton(text='⬅️ Назад', callback_data='valentine_day', style='primary')]
                                           ]))
         await state.set_state(St.ValentineProcess.waiting_username)
     elif args[1] == 'my_valentines':
@@ -60,7 +60,7 @@ async def reproccess_tasks(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_caption(caption='💬 <b>Реакция на валентинку</b>\n\nНапишите ответное сообщение или реакцию. Это может быть текст, стикер или голосовое сообщение. <a href="https://telegra.ph/Podderzhivaemye-formaty-02-05">Поддерживаемые форматы</a>',
                                             parse_mode='html',
                                             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                                                [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'valentine:my_valentines:{args[3]}')]
+                                                [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'valentine:my_valentines:{args[3]}', style='primary')]
                                             ]))
         await state.set_data({"sender_id": args[2], "receiver_id": args[4], "valentine_id": args[3]})
         await state.set_state(St.ReactValentines.waiting_message)
@@ -84,7 +84,7 @@ async def reproccess_tasks(callback: CallbackQuery, state: FSMContext):
                                             reply_markup=InlineKeyboardMarkup(inline_keyboard=[
                                                 [InlineKeyboardButton(text='❌ Запретить валентинки' if status_valentine else '✅ Разрешить валентинки',
                                                                       callback_data='valentine:profile:change_allow')],
-                                                [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'valentine_day')]
+                                                [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'valentine_day', style='primary')]
                                             ]))
         
 

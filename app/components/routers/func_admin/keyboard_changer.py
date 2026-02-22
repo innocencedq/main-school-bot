@@ -7,7 +7,7 @@ class ScheduleChangerKeyboard:
         return InlineKeyboardMarkup(inline_keyboard=[
             [InlineKeyboardButton(text='1 смена', callback_data=f'week_first_shift:{method}')],
             [InlineKeyboardButton(text='2 смена', callback_data=f'week_second_shift:{method}')],
-            [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')],
+            [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel', style='primary')],
             ])
 
     @staticmethod
@@ -18,7 +18,7 @@ class ScheduleChangerKeyboard:
             [InlineKeyboardButton(text='Среда', callback_data=f'changer:wednesday:{shift}')],
             [InlineKeyboardButton(text='Четверг', callback_data=f'changer:thursday:{shift}')],
             [InlineKeyboardButton(text='Пятница', callback_data=f'changer:friday:{shift}')],
-            [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'day_change')],
+            [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'day_change', style='primary')],
             ])
     
 

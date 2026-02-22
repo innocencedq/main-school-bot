@@ -77,8 +77,8 @@ async def change_day(message: Message, state: FSMContext):
         await message.answer_photo(photo=file_id,
                                    caption=f"Подтвердите изменение расписания на {days[day]} в {shift} смену",
                                    reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                                       [InlineKeyboardButton(text='Продолжить', callback_data='agree')],
-                                       [InlineKeyboardButton(text='Отмена', callback_data='adminpanel')]
+                                       [InlineKeyboardButton(text='Продолжить', callback_data='agree', style='success')],
+                                       [InlineKeyboardButton(text='Отмена', callback_data='adminpanel', style='danger')]
                                    ]))
     except Exception as e:
         print(e)

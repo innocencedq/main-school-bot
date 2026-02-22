@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, Chat, InputMediaPhoto
+from aiogram.types import Message, CallbackQuery, Chat, InputMediaPhoto, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.filters import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.exceptions import TelegramBadRequest
@@ -186,9 +186,13 @@ async def callback(callback: CallbackQuery, state: FSMContext):
         await state.set_state(Form.waiting_admin)
 
     elif callback.data == 'zaglushka_schedule':
-        await callback.message.answer('Начинаю заполнять расписание заглушками...')
+        await callback.message.answer('⏳ <b>Начинаю заполнять расписание заглушками...</b>', parse_mode='html')
         await loadschedule(method='stubsload')
-        await callback.message.answer('Расписание заполнено заглушками')
+        await callback.message.answer('✅ <b>Расписание заполнено заглушками!</b>',
+                                      reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                                          [InlineKeyboardButton(text='В админ меню', callback_data='adminpanel', style='primary')]
+                                      ]),
+                                      parse_mode='html')
         await adminpanel_callback(callback, state)
 
 

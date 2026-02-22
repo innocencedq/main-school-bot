@@ -186,6 +186,8 @@ async def refresh_image(img_id, img_name):
         stmt = update(Images).where(Images.image_name == img_name).values(image_id = img_id)
         await session.execute(stmt)
         await session.commit()
+        
+        await redis.delete('week_name:' + str(img_name))
     
 
 async def load_image(img_id, img_name):

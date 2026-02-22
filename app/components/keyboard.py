@@ -7,20 +7,20 @@ from app.database.requests import get_user_with_notify, get_list_admin, get_quic
 
 #Клавиатура быстрой настройки
 ask_notify = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='yes_notify')],
-    [InlineKeyboardButton(text='Нет', callback_data='no_notify')],
+    [InlineKeyboardButton(text='Да', callback_data='yes_notify', style='success')],
+    [InlineKeyboardButton(text='Нет', callback_data='no_notify', style='danger')],
 ])
 
 ask_quick_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='yes_quick_menu')],
-    [InlineKeyboardButton(text='Нет', callback_data='no_quick_menu')],
+    [InlineKeyboardButton(text='Да', callback_data='yes_quick_menu', style='success')],
+    [InlineKeyboardButton(text='Нет', callback_data='no_quick_menu', style='danger')],
 ])
 
 
 #Быстрое меню
 quick_menu_kb = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='🗓 Расписание на сегодня')],
-    [KeyboardButton(text='🏠 Главное меню')]
+    [KeyboardButton(text='🗓 Расписание на сегодня', style='primary')],
+    [KeyboardButton(text='🏠 Главное меню', style='primary')]
 ], resize_keyboard=True)
 
 
@@ -39,7 +39,7 @@ async def main_menu(user):
     builder.add(InlineKeyboardButton(text='⚪️ Официальная группа ВКонтакте', url='https://vk.com/public217585014'))
     builder.add(InlineKeyboardButton(text='⚙️ Настройки', callback_data='settings'))
     # builder.add(InlineKeyboardButton(text='📮 День святого Валентина',callback_data='valentine_day'))
-    builder.add(InlineKeyboardButton(text='Админ панель', callback_data='adminpanel')) if admin else None
+    builder.add(InlineKeyboardButton(text='Админ панель', callback_data='adminpanel', style='primary')) if admin else None
 
     return builder.adjust(2, 1).as_markup()
 
@@ -67,27 +67,27 @@ async def settings_keyboard(user):
 
     builder = InlineKeyboardBuilder()
 
-    builder.add(InlineKeyboardButton(text="🔔 Выключить уведомления о постах", callback_data='edit_settings') if notify else InlineKeyboardButton(text="🔕 Включить уведомления о постах", callback_data='edit_settings'))
-    builder.add(InlineKeyboardButton(text="⌨️ Выключить быстрое меню", callback_data='quick_menu') if quick_menu else InlineKeyboardButton(text="⌨️ Включить быстрое меню", callback_data='quick_menu'))
-    builder.add(InlineKeyboardButton(text="📒 Выключить расширенную кнопку дневника", callback_data='edit_diary') if diary else InlineKeyboardButton(text="📒 Включить расширенную кнопку дневника", callback_data='edit_diary'))
+    builder.add(InlineKeyboardButton(text="🔔 Выключить уведомления о постах", callback_data='edit_settings', style='success') if notify else InlineKeyboardButton(text="🔕 Включить уведомления о постах", callback_data='edit_settings', style='danger'))
+    builder.add(InlineKeyboardButton(text="⌨️ Выключить быстрое меню", callback_data='quick_menu', style='success') if quick_menu else InlineKeyboardButton(text="⌨️ Включить быстрое меню", callback_data='quick_menu', style='danger'))
+    builder.add(InlineKeyboardButton(text="📒 Выключить расширенную кнопку дневника", callback_data='edit_diary', style='success') if diary else InlineKeyboardButton(text="📒 Включить расширенную кнопку дневника", callback_data='edit_diary', style='danger'))
     builder.add(InlineKeyboardButton(text='🛠 Технический раздел', callback_data='bug_report'))
-    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back'))
+    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary'))
 
     return builder.adjust(1).as_markup()
 
 #Назад (настройки)
 back_settings = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='settings')],
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='settings', style='primary')],
 ])
 
 #Назад (главное меню)
 back_main = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='back')],
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary')],
 ])
 
 #Назад (главное меню) (малоиспользуемое!)
 back_main_2 = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ В главное меню', callback_data='back')],
+    [InlineKeyboardButton(text='⬅️ В главное меню', callback_data='back', style='primary')],
     [InlineKeyboardButton(text='♻️ Скрыть', callback_data='hide')]
 ])
 
@@ -103,7 +103,7 @@ def get_rasp_keyboard(shift: str = "1") -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text='🔔 Звонки', callback_data='schedule:calls')],
         [InlineKeyboardButton(text=f'🔄 Сменить смену', callback_data=f'schedule_change_shift'), 
          InlineKeyboardButton(text='⚠️ Неточности в расписании?', callback_data='help_with_schedule')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='back')],
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary')],
     ])
 
 def get_day_keyboard(day: str, shift: str = "1") -> InlineKeyboardMarkup:
@@ -122,21 +122,21 @@ def get_day_keyboard(day: str, shift: str = "1") -> InlineKeyboardMarkup:
          InlineKeyboardButton(text=f'📆 {get_day_name(next_day)}', callback_data=f'schedule:{shift}:{next_day}')],
         [InlineKeyboardButton(text=f'🔄 Сменить смену', callback_data=f'schedule_change_shift')],
         [InlineKeyboardButton(text='🔔 Звонки', callback_data='schedule:calls')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp', style='primary')]
     ])
 
 
 def get_calls_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp')]
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data='rasp', style='primary')]
     ])
 
 
 def get_shift_selection_keyboard(current_shift: str = "1") -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text=('1 смена ✅' if current_shift == "1" else '1 смена'), callback_data='schedule_set_shift:1'),
-         InlineKeyboardButton(text=('2 смена ✅' if current_shift == "2" else '2 смена'), callback_data='schedule_set_shift:2')],
-        [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'rasp')]
+        [InlineKeyboardButton(text='1 смена ✅', callback_data='schedule_set_shift:1', style='success') if current_shift == '1' else InlineKeyboardButton(text='1 смена', callback_data='schedule_set_shift:1'),
+         InlineKeyboardButton(text='2 смена ✅', callback_data='schedule_set_shift:2', style='success') if current_shift == '2' else InlineKeyboardButton(text='2 смена', callback_data='schedule_set_shift:2')],
+        [InlineKeyboardButton(text='⬅️ Назад', callback_data=f'rasp', style='primary')]
     ])
 
 
@@ -184,7 +184,7 @@ async def notify_all_schedule():
 
 async def notify_schedule(day):
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text='🗓 Перейти', callback_data=day))
+    builder.add(InlineKeyboardButton(text='🗓 Перейти', callback_data=day, style='primary'))
     builder.add(InlineKeyboardButton(text='♻️ Скрыть', callback_data='hide'))
     return builder.adjust(1).as_markup()
 
@@ -211,7 +211,7 @@ admin_panel = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='📝 Рассылка своего уведомления', callback_data='adm_message')],
     [InlineKeyboardButton(text='➕ Добавление администратора', callback_data='add_admin')],
     [InlineKeyboardButton(text='📄 Тикеты', callback_data='main_tickets')],
-    [InlineKeyboardButton(text='⬅️ Назад в главное меню', callback_data='back')],
+    [InlineKeyboardButton(text='⬅️ Назад в главное меню', callback_data='back', style='primary')],
     [InlineKeyboardButton(text='♻️ Скрыть', callback_data='hide')]
 ])
 
@@ -228,53 +228,53 @@ async def manage_tickets():
 
 
 advert_manage_kb = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Создать объявление', callback_data='advert_create')],
-    [InlineKeyboardButton(text='Редактировать объявления', callback_data='advert_edit')],
+    [InlineKeyboardButton(text='Создать объявление', callback_data='advert_create', style='success')],
+    [InlineKeyboardButton(text='Редактировать объявления', callback_data='advert_edit', style='primary')],
     [InlineKeyboardButton(text='Назад', callback_data='adminpanel')]   
 ])
 
 
 advert_skip_picture = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Пропустить', callback_data='advert_skip')]
+    [InlineKeyboardButton(text='Пропустить', callback_data='advert_skip', style='primary')]
 ])
 
 
 advert_continue_picture = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Продолжить', callback_data='advert_next')]
+    [InlineKeyboardButton(text='Продолжить', callback_data='advert_next', style='success')]
 ])
 
 
 advert_confirmed = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='advert_confirm')],
-    [InlineKeyboardButton(text='Отменить', callback_data='advert_cancel')],
-    [InlineKeyboardButton(text='Изменить заголовок', callback_data='advert_edit_title')],
-    [InlineKeyboardButton(text='Изменить описание', callback_data='advert_edit_description')],
-    [InlineKeyboardButton(text='Изменить/добавить изображение', callback_data='advert_edit_image')]
+    [InlineKeyboardButton(text='Изменить заголовок', callback_data='advert_edit_title', style='primary')],
+    [InlineKeyboardButton(text='Изменить описание', callback_data='advert_edit_description', style='primary')],
+    [InlineKeyboardButton(text='Изменить/добавить изображение', callback_data='advert_edit_image', style='primary')],
+    [InlineKeyboardButton(text='Применить изменения', callback_data='advert_confirm', style='success')],
+    [InlineKeyboardButton(text='Отменить', callback_data='advert_cancel', style='danger')]
 ])
 
 
 advert_edit_cancel = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Отменить', callback_data='advert_edit_cancel')]
+    [InlineKeyboardButton(text='Отменить', callback_data='advert_edit_cancel', style='danger')] 
 ])
 
 adm_update_schedule = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Продолжить', callback_data='schedule_update_confirm')],
-    [InlineKeyboardButton(text='Отмена', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='Продолжить', callback_data='schedule_update_confirm', style='success')],
+    [InlineKeyboardButton(text='Отмена', callback_data='adminpanel', style='danger')]
 ])
 
 
 adm_back = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel', style='primary')]
 ])
 
 
 send_own_message = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel', style='primary')]
 ])
 
 
 manual_formatting = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adm_message')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adm_message', style='primary')]
 ])
 
 
@@ -283,21 +283,21 @@ adm_rasp = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='2. Внести изменение в текущее расписание', callback_data='day_change')],
     [InlineKeyboardButton(text='3. Обновить расписание звонков', callback_data='notify_calls')],
     [InlineKeyboardButton(text='4. Заполнить расписание заглушками', callback_data='zaglushka_schedule')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')],
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel', style='primary')],
 ])
 
 
 
 confirm_adm = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='adm_confirm')],
-    [InlineKeyboardButton(text='Изменить текст', callback_data='adm_message')]
+    [InlineKeyboardButton(text='Продолжить', callback_data='adm_confirm', style='success')],
+    [InlineKeyboardButton(text='Изменить текст', callback_data='adm_message', style='primary')]
 ])
 
 
 tech_works = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Начало тех. работ', callback_data='tech_works_start')],
     [InlineKeyboardButton(text='Конец тех. работ', callback_data='tech_works_finish')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel', style='primary')]
 ])
 
 
@@ -305,27 +305,27 @@ repeat_adm = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text='�
 
 
 confirm_schedule = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='yes_schedule')],
-    [InlineKeyboardButton(text='Нет', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='Да', callback_data='yes_schedule', style='success')],
+    [InlineKeyboardButton(text='Нет', callback_data='adminpanel', style='danger')]
 ])
 
 
 confirm_day = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='yes_day_change')],
-    [InlineKeyboardButton(text='Нет', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='Да', callback_data='yes_day_change', style='success')],
+    [InlineKeyboardButton(text='Нет', callback_data='adminpanel', style='danger')]
 ])
 
 
 confirm_calls = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Да', callback_data='yes_calls_change')],
-    [InlineKeyboardButton(text='Нет', callback_data='adminpanel')]
+    [InlineKeyboardButton(text='Да', callback_data='yes_calls_change', style='success')],
+    [InlineKeyboardButton(text='Нет', callback_data='adminpanel', style='danger')]
 ])
 
 
 ann_admin = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='Добавить объявление', callback_data='add_ann')],
-    [InlineKeyboardButton(text='Редактировать объявление', callback_data='edit_ann')],
-    [InlineKeyboardButton(text='Удалить объявление', callback_data='delete_ann')],
+    [InlineKeyboardButton(text='Добавить объявление', callback_data='add_ann', style='success')],
+    [InlineKeyboardButton(text='Редактировать объявление', callback_data='edit_ann', style='primary')],
+    [InlineKeyboardButton(text='Удалить объявление', callback_data='delete_ann', style='danger')],
     [InlineKeyboardButton(text='⬅️ Назад', callback_data='adminpanel')]
 ])
 
@@ -333,7 +333,7 @@ ann_admin = InlineKeyboardMarkup(inline_keyboard=[
 bug_report = InlineKeyboardMarkup(inline_keyboard=[
     # [InlineKeyboardButton(text='📄 Тикет', callback_data='bug')], # InlineKeyboardButton(text='💡 Идея', callback_data='idea')],
     # [InlineKeyboardButton(text='👷 Стать тестером', callback_data='add_test')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='settings')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='settings', style='primary')]
 ])
 
 
@@ -346,36 +346,36 @@ async def main_diary_kb(user):
         builder.add(InlineKeyboardButton(text='📝 Домашняя работа', callback_data='get_homework'))
         builder.add(InlineKeyboardButton(text='📙 Дневник КИАСУО', url='https://pwa.kiasuo.ru/'))
         builder.add(InlineKeyboardButton(text='⚙️ Настройки дневника', callback_data='settings_diary'))
-        builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back'))
+        builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary'))
     else:
         builder.add(InlineKeyboardButton(text='📱 Вход Android (Chrome)', callback_data='auth_android_chrome'))
         builder.add(InlineKeyboardButton(text='📱 Вход iOS (Safari)', callback_data='auth_ios_safari'))
         builder.add(InlineKeyboardButton(text='💻 Вход через ПК', callback_data='auth_pc'))
         builder.add(InlineKeyboardButton(text='📙 Дневник КИАСУО', url='https://pwa.kiasuo.ru/'))
-        builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back'))
+        builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary'))
     return builder.adjust(2, 1).as_markup()
 
 
 choose_marks = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Четверть/полугодие', callback_data='get_all_marks'), InlineKeyboardButton(text='Последние 5 дней', callback_data='check_marks')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary', style='primary')]
 ])
 
 
 escape_from_marks = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='marks')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='marks', style='primary')]
 ])
 
 
 back_to_diary = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary', style='primary')]
 ])
 
 
 methods_auth = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='📱 Вход Android (Chrome)', callback_data='auth_android_chrome'), InlineKeyboardButton(text='📱 Вход iOS (Safari)', callback_data='auth_ios_safari')],
     [InlineKeyboardButton(text='💻 Вход через ПК', callback_data='auth_pc')],
-    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary')]
+    [InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary', style='primary')]
 ])
 
 
@@ -384,10 +384,10 @@ async def diary_settings_kb(user):
 
     is_notify = await get_user_with_notify_mark(user)
 
-    builder.add(InlineKeyboardButton(text='🔔 Выключить уведомеления об оценках', callback_data='change_notify_diary') if is_notify else InlineKeyboardButton(text='🔕 Включить уведомления об оценках', callback_data='change_notify_diary'))
+    builder.add(InlineKeyboardButton(text='🔔 Выключить уведомеления об оценках', callback_data='change_notify_diary', style='success') if is_notify else InlineKeyboardButton(text='🔕 Включить уведомления об оценках', callback_data='change_notify_diary', style='danger'))
     builder.add(InlineKeyboardButton(text='🔄️ Обновить токены', callback_data='refreshing_tokens'))
     builder.add(InlineKeyboardButton(text='✍️ Обновление токенов вручную', callback_data='methods_auth'))
-    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary'))
+    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='main_diary', style='primary'))
 
     return builder.adjust(1).as_markup()
 
@@ -403,8 +403,8 @@ async def advert_kb(curr_id: int, user):
                 InlineKeyboardButton(text=f'{format_pages}/{advert_last_id}', callback_data='page'),
                 InlineKeyboardButton(text='>>',  callback_data=f'advert-{(curr_id - 1) if curr_id != 1 else advert_last_id}')) # страницы
     builder.add(InlineKeyboardButton(text='➡️ В конец', callback_data=f'advert-{1}')) # к концу
-    builder.add(InlineKeyboardButton(text='📝 Редактировать (admin)', callback_data=f'edit_advert-{curr_id}')) if is_admin else None
-    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back'))
+    builder.add(InlineKeyboardButton(text='📝 Редактировать (admin)', callback_data=f'edit_advert-{curr_id}', style='success')) if is_admin else None
+    builder.add(InlineKeyboardButton(text='⬅️ Назад', callback_data='back', style='primary'))
 
     return builder.adjust(3, 1).as_markup()
 
@@ -412,12 +412,12 @@ async def advert_kb(curr_id: int, user):
 async def advert_editing(curr_id):
     builder = InlineKeyboardBuilder()
 
-    builder.row(InlineKeyboardButton(text='Применить', callback_data=f'advert_editing_confirm-{curr_id}'),
+    builder.add(InlineKeyboardButton(text='Изменить заголовок', callback_data='advert_edit_title', style='primary'))
+    builder.add(InlineKeyboardButton(text='Изменить описание', callback_data='advert_edit_description', style='primary'))
+    builder.add(InlineKeyboardButton(text='Изменить/добавить изображение', callback_data='advert_edit_image', style='primary'))
+    builder.add(InlineKeyboardButton(text='Удалить объявление', callback_data=f'delete_advert-{curr_id}', style='danger'))
+    builder.row(InlineKeyboardButton(text='Применить', callback_data=f'advert_editing_confirm-{curr_id}', style='success'),
                 InlineKeyboardButton(text='Отменить', callback_data=f'advert-{curr_id}'))
-    builder.add(InlineKeyboardButton(text='Изменить заголовок', callback_data='advert_edit_title'))
-    builder.add(InlineKeyboardButton(text='Изменить описание', callback_data='advert_edit_description'))
-    builder.add(InlineKeyboardButton(text='Изменить/добавить изображение', callback_data='advert_edit_image'))
-    builder.add(InlineKeyboardButton(text='Удалить объявление', callback_data=f'delete_advert-{curr_id}'))
 
     return builder.adjust(2, 1).as_markup()
 
@@ -425,8 +425,8 @@ async def advert_editing(curr_id):
 async def advert_continue_edit(advert_id):
     builder = InlineKeyboardBuilder()
 
-    builder.add(InlineKeyboardButton(text='Продолжить', callback_data=f'edit_advert-{advert_id}'))
-    builder.add(InlineKeyboardButton(text='Отменить', callback_data=f'edit_advert-{advert_id}-cancel'))
+    builder.add(InlineKeyboardButton(text='Продолжить', callback_data=f'edit_advert-{advert_id}', style='success'))
+    builder.add(InlineKeyboardButton(text='Отменить', callback_data=f'edit_advert-{advert_id}-cancel', style='danger'))
 
     return builder.adjust(1).as_markup()
     
