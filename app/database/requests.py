@@ -178,7 +178,7 @@ async def get_image(week_name):
             await redis.set(name="week_name:" + week_name, value=image_id)
             return str(image_id)
     else:
-        return res
+        return res.decode('utf-8') if isinstance(res, bytes) else res
     
 
 async def refresh_image(img_id, img_name):
