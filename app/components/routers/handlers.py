@@ -241,6 +241,28 @@ async def week_quick_callback(message: Message):
         await message.answer('😌 <b>Сегодня выходной!</b> Можешь спокойно отдыхать от школы)', parse_mode='html')
 
 
+@router.message(Command('today'))
+async def week_quick_callback(message: Message):
+    await message.delete()
+    user_id = message.from_user.id
+    new_username = message.from_user.username if message.from_user.username else 'unspecific_user'
+    async with async_session() as session:
+        last_username = await session.scalar(select(User.username).where(User.tg_id == user_id))
+        
+        if last_username != new_username:
+            stmt = update(User).where(User.tg_id == user_id).values(username = new_username)
+            await session.execute(stmt)
+            await session.commit()
+    try:
+        week = await get_week()
+        shift = await get_shift(message.from_user.id)
+        f, msg, markup = await get_fast_rasp(f"schedule:{shift}:{week}")
+
+        await message.answer_photo(photo=f, caption=f'{msg}', reply_markup=markup, parse_mode='html')
+    except Exception:
+        await message.answer('😌 <b>Сегодня выходной!</b> Можешь спокойно отдыхать от школы)', parse_mode='html')
+
+
 @router.message(Command('cancel'))
 async def cmd_cancel(message: Message, state: FSMContext):
     await state.clear()
