@@ -262,11 +262,11 @@ async def week_callback(callback: CallbackQuery):
     user_shift = await req.get_shift(callback.from_user.id)
 
     day_data = {
-        'monday': ('<b>🗓 Расписание на понедельник</b>', ScheduleKeyboards.monday(shift=str(user_shift))),
-        'tuesday': ('<b>🗓 Расписание на вторник</b>', ScheduleKeyboards.tuesday(shift=str(user_shift))),
-        'wednesday': ('<b>🗓 Расписание на среду</b>', ScheduleKeyboards.wednesday(shift=str(user_shift))),
-        'thursday': ('<b>🗓 Расписание на четверг</b>', ScheduleKeyboards.thursday(shift=str(user_shift))),
-        'friday': ('<b>🗓 Расписание на пятницу</b>', ScheduleKeyboards.friday(shift=str(user_shift))),
+        'monday': ('<b>🗓 Расписание на понедельник</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.monday(shift=str(user_shift))),
+        'tuesday': ('<b>🗓 Расписание на вторник</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.tuesday(shift=str(user_shift))),
+        'wednesday': ('<b>🗓 Расписание на среду</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.wednesday(shift=str(user_shift))),
+        'thursday': ('<b>🗓 Расписание на четверг</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.thursday(shift=str(user_shift))),
+        'friday': ('<b>🗓 Расписание на пятницу</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.friday(shift=str(user_shift))),
         'calls': ('<b>🔔 Расписание звонков</b>', ScheduleKeyboards.calls())
     }
     
