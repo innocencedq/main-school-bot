@@ -98,7 +98,7 @@ async def shedule_change_shift(callback: CallbackQuery):
 @router_callback.callback_query(F.data == 'settings')
 async def settings_callback(callback: CallbackQuery, where: str = None):
     f = await get_image(week_name='main_settings')
-    photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>\n\n⚠️ <u>Уведомления о постах из ВК</u> временно не работают.', parse_mode='html')
     user = callback.from_user.id
     
     res = await util.unauth_user_trap(user, callback.message.from_user.username)
@@ -109,7 +109,7 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
 
 
     if where == 'quick_menu':
-        await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>', reply_markup=await settings_keyboard(user=user), parse_mode='html')
+        await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>\n\n⚠️ <u>Уведомления о постах из ВК</u> временно не работают.', reply_markup=await settings_keyboard(user=user), parse_mode='html')
     else:
         await callback.message.edit_media(media=photo, reply_markup=await settings_keyboard(user=user))
 
