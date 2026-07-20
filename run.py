@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import uvicorn
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 
@@ -17,12 +18,16 @@ from app.supportfunctions.redis_misc import redis
 from app.components.routers.tickets.topics import topic_router
 from app.components.routers.func_admin.schedule_changer import router_adm as checker_router
 from app.components.routers.valentine_day import valentine_day_router
+from app.components.routers.func_admin.webadmin.web import app as web_admin
 
 bot = Bot(token=tg_token)
 
 #Функция инициализации
 async def main():
     await async_main()
+
+    config = uvicorn.Config(web_admin, host='127.0.0.1', port=8000, log_level='info')
+    webka = uvicorn.Server(config)
     
     asyncio.create_task(remove_blocked_users())
     asyncio.create_task(send_new_posts())
@@ -38,7 +43,10 @@ async def main():
                        checker_router,
                        valentine_day_router)
 
-    await dp.start_polling(bot)
+    await asyncio.gather(
+        webka.serve(),
+        dp.start_polling(bot)
+        )
 
 
 #Точка входа

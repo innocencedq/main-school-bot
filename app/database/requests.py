@@ -1,5 +1,5 @@
 import json
-from app.database.data import User, async_session, Admin, Images, Advert, ReportTicket, Valentines, InprocessValentines
+from app.database.data import User, async_session, Admin, Images, Advert, ReportTicket, Valentines, InprocessValentines, StringsUI
 from sqlalchemy import exists, select, func, update, delete, desc, text
 
 from app.components.routers.tickets.topics import create_topic
@@ -10,6 +10,12 @@ from app.supportfunctions.redis_misc import redis
 async def get_all_users():
     async with async_session() as session:
         users = await session.scalars(select(User.tg_id))
+        users_id = users.all()
+        return users_id
+    
+async def get_all_users_info():
+    async with async_session() as session:
+        users = await session.scalars(select(User))
         users_id = users.all()
         return users_id
     
@@ -165,8 +171,7 @@ async def get_list_username(user):
 
 async def get_username_with_id(username):
     async with async_session() as session:
-        chat_id = await session.scalars(select(User.tg_id).filter_by(username=username))
-        chat_id = chat_id.all()
+        chat_id = await session.scalar(select(User.tg_id).where(User.username == username))
         return chat_id
 
 
@@ -266,7 +271,11 @@ async def add_admin(telegram_id, username: str = None):
         await redis.set(name="check_admin:" + str(telegram_id), value=1, ex=21600)
 
 
-async def check_admin(user):
+async def check_admin(user, method: str = 'id'):
+    if method == 'username':
+        user = await get_username_with_id(user)
+        print(user)
+
     res = await redis.get(name="check_admin:" + str(user))
     if not res:
         async with async_session() as session:
@@ -274,7 +283,7 @@ async def check_admin(user):
             await redis.set(name="check_admin:" + str(user), value=1 if sql_res else 0, ex=21600)
             return bool(sql_res)
     else:
-        return bool(int(res))
+        return bool(int(res))   
 
 
 async def delete_user(user):
@@ -644,3 +653,25 @@ async def change_tables_info_valentine(chat_id, username):
             return 'has_valentines'
         else:
             return 'hasnt_valentines'
+        
+
+async def get_text_ui(name):
+    async with async_session() as session:
+        stmt = await session.scalar(select(StringsUI.text).where(StringsUI.name == name))
+        return stmt
+
+
+async def get_all_strings_ui():
+    async with async_session() as session:
+        stmt = select(StringsUI)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
+
+async def change_text_ui(name, new_text):
+    async with async_session() as session:
+        stmt = update(StringsUI).where(StringsUI.name == name).values(text=new_text)
+        await session.execute(stmt)
+        await session.commit()
+
+

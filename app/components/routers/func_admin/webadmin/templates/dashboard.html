@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #e6edf3;
+        }
+        
+        .bg-dark {
+            background-color: #161b22 !important;
+        }
+        .bg-dark .nav-link {
+            color: #8b949e !important;
+            transition: all 0.2s;
+        }
+        .bg-dark .nav-link:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+        .bg-dark .nav-link.active {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+        }
+        .bg-dark hr {
+            border-color: #30363d;
+        }
+        .bg-dark h4 {
+            color: #f0f6fc;
+        }
+        
+        .col-md-10 {
+            background-color: #0d1117;
+        }
+        .col-md-10 h2 {
+            color: #f0f6fc;
+        }
+        .col-md-10 .text-muted {
+            color: #8b949e !important;
+        }
+        
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        .card-header {
+            background-color: #1c2128;
+            border-bottom: 1px solid #30363d;
+            color: #f0f6fc;
+        }
+        .card-header.bg-primary {
+            background-color: #1f6feb !important;
+            border-color: #1f6feb;
+        }
+        .card-body {
+            background-color: #161b22;
+        }
+        
+        .table {
+            color: #e6edf3;
+            border-color: #30363d;
+            margin-bottom: 0;
+        }
+        .table thead th {
+            background-color: #1c2128;
+            color: #8b949e;
+            border-bottom: 2px solid #30363d;
+            font-weight: 600;
+        }
+        .table tbody tr {
+            background-color: #161b22;
+            border-bottom: 1px solid #21262d;
+            transition: background-color 0.15s;
+        }
+        .table tbody tr:hover {
+            background-color: #1c2128 !important;
+        }
+        .table td {
+            vertical-align: middle;
+            border-color: #30363d;
+            background-color: transparent;
+        }
+        .table-hover > tbody > tr:hover {
+            --bs-table-hover-bg: #1c2128 !important;
+        }
+        
+        .table .form-control {
+            background-color: #0d1117;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        .table .form-control:focus {
+            background-color: #0d1117;
+            border-color: #1f6feb;
+            color: #e6edf3;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.3);
+        }
+        .table .input-group .form-control {
+            background-color: #0d1117;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        .table .input-group .btn {
+            border-color: #30363d;
+        }
+        
+        .badge.bg-secondary {
+            background-color: #30363d !important;
+            color: #e6edf3;
+        }
+        .badge.bg-success {
+            background-color: #2ea043 !important;
+        }
+        .badge.bg-danger {
+            background-color: #da3633 !important;
+        }
+        
+        .form-control {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        .form-control:focus {
+            background-color: #0d1117;
+            border-color: #1f6feb;
+            color: #e6edf3;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.3);
+        }
+        .form-control::placeholder {
+            color: #484f58;
+        }
+        
+        .btn-primary {
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        .btn-primary:hover {
+            background-color: #388bfd;
+            border-color: #388bfd;
+        }
+        .btn-outline-success {
+            color: #2ea043;
+            border-color: #2ea043;
+        }
+        .btn-outline-success:hover {
+            background-color: #2ea043;
+            border-color: #2ea043;
+            color: #0d1117;
+        }
+        .btn-outline-warning {
+            color: #e3b341;
+            border-color: #e3b341;
+        }
+        .btn-outline-warning:hover {
+            background-color: #e3b341;
+            border-color: #e3b341;
+            color: #0d1117;
+        }
+        .btn-outline-primary {
+            color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        .btn-outline-primary:hover {
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+            color: #0d1117;
+        }
+        
+        .alert-success {
+            background-color: #0d4422;
+            border-color: #2ea043;
+            color: #e6edf3;
+        }
+        .alert-success .btn-close {
+            filter: invert(1);
+        }
+        
+        .text-white {
+            color: #e6edf3 !important;
+        }
+        .text-secondary {
+            color: #8b949e !important;
+        }
+        .text-danger {
+            color: #da3633 !important;
+        }
+        .text-danger:hover {
+            color: #f85149 !important;
+        }
+        
+        .table .btn {
+            border-color: #30363d;
+        }
+        .table .btn-outline-success,
+        .table .btn-outline-warning,
+        .table .btn-outline-primary {
+            color: #8b949e;
+            border-color: #30363d;
+        }
+        .table .btn-outline-success:hover {
+            color: #0d1117;
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        .table .btn-outline-warning:hover {
+            color: #0d1117;
+            background-color: #e3b341;
+            border-color: #e3b341;
+        }
+        .table .btn-outline-primary:hover {
+            color: #0d1117;
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        
+        .table .d-flex {
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- навигация -->
+            <nav class="col-md-2 bg-dark min-vh-100 p-3">
+                <h4 class="text-white mb-4">Админ-панель</h4>
+                <div class="text-white mb-3 d-flex justify-content-between align-items-center" style="margin-left: 15px;">
+                    <div>
+                        <i class="bi bi-file-person-fill me-1"></i>
+                        <small>{{ admin.login }}</small>
+                    </div>
+                    <a href="/logout" class="text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+                <hr class="text-secondary">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link text-white active">
+                            <i class="bi bi-speedometer2"></i> Панель управления
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/edit_texts" class="nav-link text-white mt-1">
+                            <i class="bi bi-pencil-square"></i> Редактирование текстов
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- контент -->
+            <div class="col-md-10 p-4">
+                <h2>Пользователи</h2>
+                <p class="text-muted">Всего пользователей: {{ total_users }}</p>
+                
+                {% if last_action %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ last_action }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+                
+                <!-- рассылка -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">Рассылка</div>
+                    <div class="card-body">
+                        <form action="/send_all" method="POST">
+                            <textarea name="message" class="form-control mb-2" rows="3" 
+                                placeholder="Сообщение для всех пользователей"></textarea>
+                            <button type="submit" class="btn btn-primary">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- таблица -->
+                <div class="card">
+                    <div class="card-header">Список пользователей</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Имя</th>
+                                        <th>Дата регистрации</th>
+                                        <th>AI запросы</th>
+                                        <th>Смена</th>
+                                        <th>Тестер</th>
+                                        <th>Действия</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td class="text-white">{{ user.tg_id }}</td>
+                                        <td class="text-white">{{ user.full_name }}</td>
+                                        <td class="text-white">{{ user.date_started.strftime('%d.%m.%Y %H:%M') if user.date_started else '—' }}</td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ user.requests_ai }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                {{ user.shift }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if user.tester %}bg-success{% else %}bg-danger{% endif %}">
+                                                {{ 'Да' if user.tester else 'Нет' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-1 flex-wrap">
+                                                <form action="/update_requests_ai" method="POST" class="d-inline">
+                                                    <input type="hidden" name="tg_id" value="{{ user.tg_id }}">
+                                                    <div class="input-group input-group-sm" style="width: auto;">
+                                                        <input type="number" name="amount" value="5" style="width:60px;" class="form-control form-control-sm">
+                                                        <button type="submit" class="btn btn-outline-success" title="Добавить AI запросы">
+                                                            <i class="bi bi-plus-circle"></i>
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                                
+                                                <form action="/toggle_shift" method="POST" class="d-inline">
+                                                    <input type="hidden" name="tg_id" value="{{ user.tg_id }}">
+                                                    <button type="submit" class="btn btn-outline-warning btn-sm" title="Переключить смену">
+                                                        <i class="bi bi-arrow-left-right"></i>
+                                                    </button>
+                                                </form>
+
+                                                <form action="/toggle_tester" method="POST" class="d-inline">
+                                                    <input type="hidden" name="tg_id" value="{{ user.tg_id }}">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Переключить тестера">
+                                                        <i class="bi bi-person-check"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr><td colspan="7" class="text-center">Нет пользователей</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

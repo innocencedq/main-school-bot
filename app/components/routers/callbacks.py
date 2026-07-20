@@ -12,7 +12,7 @@ from app.components.keyboard import settings_keyboard, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_CallbackQuery
 import app.supportfunctions.main_utils as util
-from app.database.requests import get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
+from app.database.requests import get_text_ui, get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
 from app.database.data import async_session, User
 import app.database.requests as req
@@ -37,6 +37,8 @@ async def quick_settings_menu(callback: CallbackQuery):
 #Расписание из главного меню
 @router_callback.callback_query(F.data == 'rasp')
 async def rasp_callback(callback: CallbackQuery):
+    select_day_msg = await get_text_ui('select-day-schedule')
+
     user_id = callback.from_user.id
     new_username = callback.from_user.username if callback.from_user.username else 'unspecific_user'
 
@@ -47,7 +49,7 @@ async def rasp_callback(callback: CallbackQuery):
         await check_new_user_valentines_CallbackQuery(callback=callback)
 
     f = await get_image(week_name='main_rasp')
-    photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption=select_day_msg, parse_mode='html')
     shift = await req.get_shift(user_id)
 
     try:
@@ -57,28 +59,30 @@ async def rasp_callback(callback: CallbackQuery):
             await callback.message.delete()
         except TelegramBadRequest:
             pass
-        await callback.message.answer('<b>📅 Выберите день недели</b>', reply_markup=ScheduleKeyboards.rasp(shift=shift), parse_mode='html')
+        await callback.message.answer(select_day_msg, reply_markup=ScheduleKeyboards.rasp(shift=shift), parse_mode='html')
 
 
 #Назад в главное меню
 @router_callback.callback_query(F.data.in_(['back', 'no_quick_menu']))
 async def back_callback(callback: CallbackQuery, state: FSMContext, where: str = None):
     await state.clear()
+    welcome_msg = await get_text_ui('welcome-message')
+
     f = await get_image(week_name='main_menu')
-    photo = InputMediaPhoto(media=f, caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>\n\n{welcome_msg}\n\n", parse_mode='html')
     if where == 'yes_quick_menu':
         await callback.message.answer_photo(photo=f, 
-                                            caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", 
+                                            caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>\n\n{welcome_msg}\n\nДолго обрабатываются кнопки? ->\n/menu", 
                                             reply_markup=await menu_keyboard(user=callback.from_user.id), 
                                             parse_mode='html')
     else:
-        await callback.message.edit_media(media=photo, caption=welcome_message, reply_markup=await menu_keyboard(user=callback.from_user.id), parse_mode='html')
+        await callback.message.edit_media(media=photo, caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>" + welcome_msg, reply_markup=await menu_keyboard(user=callback.from_user.id), parse_mode='html')
 
 @router_callback.callback_query(F.data == 'schedule_change_shift')
 async def schedule_change_shift(callback: CallbackQuery):
     shift = await req.get_shift(callback.from_user.id)
     f = await get_image(week_name='main_rasp')
-    photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите день недели</b>', parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите вашу смену</b>', parse_mode='html')
 
     await callback.message.edit_media(media=photo,
                               reply_markup=ScheduleKeyboards.shift_selection(current_shift=str(shift)),
@@ -97,8 +101,9 @@ async def shedule_change_shift(callback: CallbackQuery):
 #Настройки
 @router_callback.callback_query(F.data == 'settings')
 async def settings_callback(callback: CallbackQuery, where: str = None):
+    settings_msg = await get_text_ui('settings-message')
     f = await get_image(week_name='main_settings')
-    photo = InputMediaPhoto(media=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>\n\n⚠️ <u>Уведомления о постах из ВК</u> временно не работают.', parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption=settings_msg, parse_mode='html')
     user = callback.from_user.id
     
     res = await util.unauth_user_trap(user, callback.message.from_user.username)
@@ -109,7 +114,7 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
 
 
     if where == 'quick_menu':
-        await callback.message.answer_photo(photo=f, caption='<b>⚙️ Настройки</b>\n\n <a href="https://telegra.ph/Bystroe-menyu-04-09">Что такое быстрое меню?</a>\n\n⚠️ <u>Уведомления о постах из ВК</u> временно не работают.', reply_markup=await settings_keyboard(user=user), parse_mode='html')
+        await callback.message.answer_photo(photo=f, caption=settings_msg, reply_markup=await settings_keyboard(user=user), parse_mode='html')
     else:
         await callback.message.edit_media(media=photo, reply_markup=await settings_keyboard(user=user))
 
@@ -185,8 +190,9 @@ async def quick_menu_callback(callback: CallbackQuery, state: FSMContext):
 #Технический раздел
 @router_callback.callback_query(F.data == 'bug_report')
 async def bug_report_callback(callback: CallbackQuery):
+    techsup_msg = await get_text_ui('techsup-message')
     f = await get_image(week_name='settings_tech')
-    photo = InputMediaPhoto(media=f, caption=bug_report_message + '\n<b>На данный момент тикеты не работают! По всем тех. вопросам, переходите в личные сообщения телеграмм канала!</b>', parse_mode='html')
+    photo = InputMediaPhoto(media=f, caption=techsup_msg, parse_mode='html')
 
     await callback.message.edit_media(media=photo, reply_markup=bug_report)
 
@@ -261,13 +267,14 @@ async def week_callback(callback: CallbackQuery):
     day = callback.data.split(':')[2] if len(callback.data.split(':')) == 3 else callback.data.split(':')[1]
     user_shift = await req.get_shift(callback.from_user.id)
 
+
     day_data = {
-        'monday': ('<b>🗓 Расписание на понедельник</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.monday(shift=str(user_shift))),
-        'tuesday': ('<b>🗓 Расписание на вторник</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.tuesday(shift=str(user_shift))),
-        'wednesday': ('<b>🗓 Расписание на среду</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.wednesday(shift=str(user_shift))),
-        'thursday': ('<b>🗓 Расписание на четверг</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.thursday(shift=str(user_shift))),
-        'friday': ('<b>🗓 Расписание на пятницу</b>\n\n❕ <i>Расписание только для 11-х и 9-х классов!</i>', ScheduleKeyboards.friday(shift=str(user_shift))),
-        'calls': ('<b>🔔 Расписание звонков</b>', ScheduleKeyboards.calls())
+        'monday': (await get_text_ui('schedule-monday'), ScheduleKeyboards.monday(shift=str(user_shift))),
+        'tuesday': (await get_text_ui('schedule-tuesday'), ScheduleKeyboards.tuesday(shift=str(user_shift))),
+        'wednesday': (await get_text_ui('schedule-wednesday'), ScheduleKeyboards.wednesday(shift=str(user_shift))),
+        'thursday': (await get_text_ui('schedule-thursday'), ScheduleKeyboards.thursday(shift=str(user_shift))),
+        'friday': (await get_text_ui('schedule-friday'), ScheduleKeyboards.friday(shift=str(user_shift))),
+        'calls': (await get_text_ui('schedule-calls'), ScheduleKeyboards.calls())
     }
     
     if day in day_data:
@@ -318,8 +325,8 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
 
 @router_callback.callback_query(F.data == 'help_with_schedule')
 async def help_with_schedule(callback: CallbackQuery) -> None:
-    await callback.message.answer(f'<b>⚠️ Неточности в расписании</b>\n\nВы можете помочь боту, скинув текущее расписание в личку <a href="https://t.me/HelperSchool3News">телеграмм канала</a> (в левом нижмем углу кнопка сообщения).', parse_mode='html', reply_markup=notify)
-    await callback.answer('Удачно!')
+    misses_schedule_msg = await get_text_ui('misses-in-schedule-message')
+    await callback.message.answer(misses_schedule_msg, parse_mode='html', reply_markup=notify)
 
 
 @router_callback.callback_query(F.data == 'change_admin_rank')

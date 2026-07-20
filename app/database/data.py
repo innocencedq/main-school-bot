@@ -10,7 +10,7 @@ from config import sqlalchemy_url
 #Все названия отвечают сами за себя
 engine = create_async_engine(sqlalchemy_url)
 
-async_session = async_sessionmaker(engine)
+async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -90,6 +90,15 @@ class InprocessValentines(Base):
     sender_id: Mapped[int] = mapped_column(BigInteger)
     message: Mapped[str] = mapped_column()
     is_read: Mapped[bool] = mapped_column(default=False)
+
+
+class StringsUI(Base):
+    __tablename__ = 'strings_ui'
+
+    id: Mapped[int] = mapped_column(primary_key=True, nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(unique=True)
+    text: Mapped[str] = mapped_column()
+
 
 
 async def async_main():

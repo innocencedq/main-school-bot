@@ -9,7 +9,7 @@ from aiogram.fsm.context import FSMContext
 from app.components.diary.parsing import refresh_token as rf
 from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_Message
 from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
-from app.database.requests import add_admin, check_admin, get_all_users, get_developer_chat_id, get_full_info_user, get_image, get_shift, load_image
+from app.database.requests import add_admin, check_admin, get_all_users, get_developer_chat_id, get_full_info_user, get_image, get_shift, load_image, get_text_ui
 from app.database.data import async_session, User
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
@@ -59,6 +59,7 @@ async def quick_settings_notify(message: Message):
 @router.message(Command('menu'))
 async def menu(message: Message, state: FSMContext):
     try:
+        welcome_msg = await get_text_ui('welcome-message')
         await message.delete()
         await state.clear()
         res = await unauth_user_trap(message.from_user.id, message.from_user.username)
@@ -67,7 +68,7 @@ async def menu(message: Message, state: FSMContext):
             await check_new_user_valentines_Message(message=message)
 
         f = await get_image(week_name='main_menu')
-        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu\n\n" + (res if res else ''), reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
+        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n\n{welcome_msg}\n\n" + (res if res else ''), reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
         print(e)
         await message.answer('❌')
@@ -389,16 +390,10 @@ async def getphotofileid(message: Message):
 
 @router.message(Command('oge'))
 async def oge(message: Message):
+    msg = await get_text_ui('oge-message')
+
     await message.delete()
-    await message.answer('🗓 <b>Расписание ОГЭ</b>: 2 июня - 6 июля.\n\n'
-                        '<b>2 июня</b> – математика\n' \
-                        '<b>6 июня</b> – информатика и иностранные языки\n' \
-                        '<b>9 июня</b> – русский язык\n' \
-                        '<b>5, 16 и 19 июня</b> – все предметы, за исключением русского языка и математики\n' \
-                        '<b>29 июня</b> запланирован резервный день для сдачи экзамена по математике\n' \
-                        '<b>2 июля</b> – для сдачи экзамена по русскому языку\n' \
-                        '<b>3 и 6 июля</b> – для сдачи экзамена по всем учебным предметам, кроме русского языка и математики.\n\n' \
-                        '❗️<b>В расписании указан основной период сдачи экзамена</b>',
+    await message.answer(msg,
                          parse_mode='html', 
                          reply_markup=hide)
     
@@ -406,17 +401,10 @@ async def oge(message: Message):
 
 @router.message(Command('ege'))
 async def ege(message: Message):
+    msg = await get_text_ui('ege-message')
+
     await message.delete()
-    await message.answer('🗓 <b>Расписание ЕГЭ:</b> 1 июня – 9 июля.\n\n' \
-                        '<b>1 июня</b> – история, литература, химия\n' \
-                        '<b>4 июня</b> – русский язык\n' \
-                        '<b>8 июня</b> – математика (база и профиль)\n' \
-                        '<b>11 июня</b> – обществознание, физика\n' \
-                        '<b>15 июня</b> – биология, география, письменная часть иностранных языков\n' \
-                        '<b>18–19 июня</b> – информатика и устная часть иностранных языков\n' \
-                        '<b>22–25 июня</b> – резервные дни по всем предметам\n' \
-                        '<b>8–9 июля</b> – пересдачи по выбору\n\n' \
-                        '❗️<b>В расписании указан основной период сдачи экзамена</b>',
+    await message.answer(msg,
                          parse_mode='html', 
                          reply_markup=hide)
     

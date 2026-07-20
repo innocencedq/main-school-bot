@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование текстов</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #e6edf3;
+        }
+        .bg-dark {
+            background-color: #161b22 !important;
+        }
+        .bg-dark .nav-link {
+            color: #8b949e !important;
+            transition: all 0.2s;
+        }
+        .bg-dark .nav-link:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+        .bg-dark .nav-link.active {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+        }
+        .bg-dark hr {
+            border-color: #30363d;
+        }
+        .bg-dark h4 {
+            color: #f0f6fc;
+        }
+        .col-md-10 {
+            background-color: #0d1117;
+        }
+        .col-md-10 h2 {
+            color: #f0f6fc;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        .card-header {
+            background-color: #1c2128;
+            border-bottom: 1px solid #30363d;
+            color: #f0f6fc;
+        }
+        .card-header.bg-warning {
+            background-color: #9e6a03 !important;
+            border-color: #9e6a03;
+        }
+        .card-header.bg-warning .text-dark {
+            color: #f0f6fc !important;
+        }
+        .card-body {
+            background-color: #161b22;
+        }
+        .card-body .bg-light {
+            background-color: #1c2128 !important;
+        }
+        .card-body .bg-light .text-muted {
+            color: #8b949e !important;
+        }
+        .form-control {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        .form-control:focus {
+            background-color: #0d1117;
+            border-color: #1f6feb;
+            color: #e6edf3;
+            box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.3);
+        }
+        .form-control::placeholder {
+            color: #484f58;
+        }
+        .btn-primary {
+            background-color: #1f6feb;
+            border-color: #1f6feb;
+        }
+        .btn-primary:hover {
+            background-color: #388bfd;
+            border-color: #388bfd;
+        }
+        .btn-success {
+            background-color: #2ea043;
+            border-color: #2ea043;
+        }
+        .btn-success:hover {
+            background-color: #3fb950;
+            border-color: #3fb950;
+        }
+        .btn-warning {
+            background-color: #d29922;
+            border-color: #d29922;
+            color: #0d1117;
+        }
+        .btn-warning:hover {
+            background-color: #e3b341;
+            border-color: #e3b341;
+            color: #0d1117;
+        }
+        .btn-outline-secondary {
+            color: #8b949e;
+            border-color: #30363d;
+        }
+        .btn-outline-secondary:hover {
+            background-color: #30363d;
+            border-color: #30363d;
+            color: #e6edf3;
+        }
+        .btn-danger {
+            background-color: #da3633;
+            border-color: #da3633;
+        }
+        .btn-danger:hover {
+            background-color: #f85149;
+            border-color: #f85149;
+        }
+        .badge.bg-secondary {
+            background-color: #30363d !important;
+            color: #e6edf3;
+        }
+        .badge.bg-success {
+            background-color: #2ea043 !important;
+        }
+        .badge.bg-danger {
+            background-color: #da3633 !important;
+        }
+        .badge.bg-primary {
+            background-color: #1f6feb !important;
+        }
+        .alert-success {
+            background-color: #0d4422;
+            border-color: #2ea043;
+            color: #e6edf3;
+        }
+        .alert-success .btn-close {
+            filter: invert(1);
+        }
+        .modal-content {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        .modal-header {
+            border-bottom: 1px solid #30363d;
+        }
+        .modal-footer {
+            border-top: 1px solid #30363d;
+        }
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+        .preview-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .preview-content b, .preview-content strong {
+            font-weight: bold;
+            color: #f0f6fc;
+        }
+        .preview-content i, .preview-content em {
+            font-style: italic;
+        }
+        .preview-content u {
+            text-decoration: underline;
+        }
+        .preview-content s {
+            text-decoration: line-through;
+        }
+        .preview-content a {
+            color: #58a6ff;
+            text-decoration: underline;
+        }
+        .preview-content a:hover {
+            color: #79c0ff;
+        }
+        .preview-content code {
+            background-color: #1c2128;
+            color: #f0f6fc;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.875em;
+        }
+        .preview-content pre {
+            background-color: #1c2128;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #30363d;
+            overflow-x: auto;
+            color: #e6edf3;
+        }
+        .preview-content blockquote {
+            border-left: 4px solid #30363d;
+            padding-left: 1rem;
+            margin-left: 0;
+            color: #8b949e;
+        }
+        .preview-content ul, .preview-content ol {
+            padding-left: 1.5rem;
+        }
+        .preview-content .text-muted {
+            color: #8b949e !important;
+        }
+        .text-white {
+            color: #e6edf3 !important;
+        }
+        .text-secondary {
+            color: #8b949e !important;
+        }
+        .text-danger {
+            color: #da3633 !important;
+        }
+        .text-danger:hover {
+            color: #f85149 !important;
+        }
+        .text-success {
+            color: #2ea043 !important;
+        }
+        .text-warning {
+            color: #d29922 !important;
+        }
+        .bg-light {
+            background-color: #1c2128 !important;
+        }
+        .bg-light .border {
+            border-color: #30363d !important;
+        }
+        .bg-light .rounded {
+            border-radius: 6px !important;
+        }
+        .bg-light code {
+            color: #f0f6fc;
+        }
+        #toastContainer .toast {
+            background-color: #161b22 !important;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+        }
+        #toastContainer .toast .btn-close {
+            filter: invert(1);
+        }
+        .card-body .bg-light.p-2.rounded {
+            background-color: #0d1117 !important;
+            border: 1px solid #30363d;
+        }
+        .card-body .border.p-2.bg-white.rounded {
+            background-color: #0d1117 !important;
+            border-color: #30363d !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- навигация -->
+            <nav class="col-md-2 bg-dark min-vh-100 p-3">
+                <h4 class="text-white mb-4">Админ-панель</h4>
+                <div class="text-white mb-3 d-flex justify-content-between align-items-center" style="margin-left: 15px;">
+                    <div>
+                        <i class="bi bi-file-person-fill me-1"></i>
+                        <small>{{ admin.login }}</small>
+                    </div>
+                    <a href="/logout" class="text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+                <hr class="text-secondary">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="/dashboard" class="nav-link text-white">
+                            <i class="bi bi-speedometer2"></i> Панель управления
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/edit_texts" class="nav-link text-white active mt-1">
+                            <i class="bi bi-pencil-square"></i> Редактирование текстов
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- контент -->
+            <main class="col-md-10 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Редактирование текстов</h2>
+                    <span class="badge bg-primary fs-6">{{ texts|length if texts else 0 }} текстов</span>
+                </div>
+                {% if last_action %}
+                <div class="alert alert-success alert-dismissible fade show">
+                    {{ last_action }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endif %}
+                
+                <!-- заметка -->
+                <div class="card mb-4 border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <i class="bi bi-info-circle"></i> Важно: Поддержка HTML-тегов
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-check-circle-fill text-success"></i> Поддерживаемые теги:</h6>
+                                <ul class="list-unstyled">
+                                    <li><code>&lt;b&gt;текст&lt;/b&gt;</code> — жирный текст</li>
+                                    <li><code>&lt;i&gt;текст&lt;/i&gt;</code> — курсив</li>
+                                    <li><code>&lt;u&gt;текст&lt;/u&gt;</code> — подчеркнутый текст</li>
+                                    <li><code>&lt;s&gt;текст&lt;/s&gt;</code> — зачеркнутый текст</li>
+                                    <li><code>&lt;a href="url"&gt;ссылка&lt;/a&gt;</code> — гиперссылка</li>
+                                    <li><code>&lt;br&gt;</code> — перенос строки</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><i class="bi bi-lightbulb-fill text-warning"></i> Примеры:</h6>
+                                <div class="bg-light p-2 rounded">
+                                    <p class="mb-1"><small class="text-muted">Исходный код:</small></p>
+                                    <code class="d-block mb-2">
+                                        &lt;b&gt;Важно!&lt;/b&gt; Это &lt;i&gt;очень&lt;/i&gt; важное сообщение.&lt;br&gt;Переходите по &lt;a href="https://example.com"&gt;ссылке&lt;/a&gt;.
+                                    </code>
+                                    <p class="mb-1"><small class="text-muted">Результат:</small></p>
+                                    <div class="border p-2 bg-white rounded">
+                                        <b>Важно!</b> Это <i>очень</i> важное сообщение.<br>Переходите по <a href="https://example.com">ссылке</a>.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="bg-light p-3 rounded border">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-info-circle-fill text-primary me-2" style="font-size: 1.2rem; margin-top: 2px;"></i>
+                                    <div>
+                                        <strong>Важное замечание:</strong> 
+                                        Все HTML-теги будут автоматически обработаны. 
+                                        Неправильное использование тегов может нарушить отображение текста и приведет к перезапуску бота, <b>перед сохранением обязательно просмотрите предпросмотр текста</b>.
+                                        <br>Для переноса строки используйте клавишу Enter.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- таблица -->
+                <div class="row">
+                    {% if texts %}
+                        {% for text in texts %}
+                        <div class="col-12 mb-3">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong><i class="bi bi-file-text"></i> {{ text.name }}</strong>
+                                        <span class="badge bg-secondary ms-2">ID: {{ text.id }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="badge bg-{% if text.text %}success{% else %}danger{% endif %}">
+                                            {% if text.text %}Заполнен{% else %}Пусто{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form action="/update_text" method="post">
+                                        <input type="hidden" name="text_id" value="{{ text.id }}">
+                                        <input type="hidden" name="text_name" value="{{ text.name }}">
+                                        <div class="form-group">
+                                            <textarea name="text_value" id="textarea-{{ text.id }}" class="form-control" rows="3">{{ text.text }}</textarea>
+                                        </div>
+                                        <div class="mt-2">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-save"></i> Сохранить
+                                            </button>
+                                            <button type="button" class="btn btn-success btn-sm" 
+                                                    onclick="previewText('{{ text.id }}', '{{ text.name|escape }}')">
+                                                <i class="bi bi-eye"></i> Предпросмотр
+                                            </button>
+                                            <button type="button" class="btn btn-warning btn-sm" 
+                                                    onclick="copyToClipboard(this)">
+                                                <i class="bi bi-clipboard"></i> Копировать
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                                    onclick="toggleFullscreen(this)">
+                                                <i class="bi bi-arrows-expand"></i> Развернуть
+                                            </button>
+                                            <form action="/delete_text" method="post" class="d-inline" 
+                                                  onsubmit="return confirm('Вы уверены, что хотите удалить текст «{{ text.name }}»?');">
+                                                <input type="hidden" name="text_id" value="{{ text.id }}">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Удалить
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body text-center py-5">
+                                    <i class="bi bi-inbox" style="font-size: 48px; color: #30363d;"></i>
+                                    <h5 class="mt-3">Нет доступных текстов</h5>
+                                    <p class="text-muted">Создайте первый текст с помощью формы выше</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- предпросмотр -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">
+                        <i class="bi bi-eye"></i> Предпросмотр: <span id="previewTitle">Текст</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body preview-modal">
+                    <div class="preview-content" id="previewContent">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" onclick="copyPreviewText()">
+                        <i class="bi bi-clipboard"></i> Копировать текст
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentPreviewText = '';
+
+        function previewText(textId, textName) {
+            const textarea = document.getElementById('textarea-' + textId);
+            const text = textarea.value;
+            const previewContent = document.getElementById('previewContent');
+            const previewTitle = document.getElementById('previewTitle');
+            
+            currentPreviewText = text;
+            previewTitle.textContent = textName;
+            previewContent.innerHTML = text || '<em class="text-muted">Текст пуст</em>';
+            
+            const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+            modal.show();
+        }
+
+        function copyPreviewText() {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(currentPreviewText)
+                    .then(() => {
+                        showToast('✅ Текст скопирован в буфер обмена!');
+                    })
+                    .catch(() => {
+                        fallbackCopyPreviewText();
+                    });
+            } else {
+                fallbackCopyPreviewText();
+            }
+        }
+
+        function fallbackCopyPreviewText() {
+            const textarea = document.createElement('textarea');
+            textarea.value = currentPreviewText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast('✅ Текст скопирован в буфер обмена!');
+            } catch (err) {
+                showToast('❌ Ошибка при копировании');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message) {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.position = 'fixed';
+                toastContainer.style.bottom = '20px';
+                toastContainer.style.right = '20px';
+                toastContainer.style.zIndex = '9999';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toastEl = document.createElement('div');
+            toastEl.className = 'toast align-items-center text-white bg-success border-0 show';
+            toastEl.role = 'alert';
+            toastEl.ariaLive = 'assertive';
+            toastEl.ariaAtomic = 'true';
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toastEl);
+            
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+                setTimeout(() => {
+                    toastEl.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        function copyToClipboard(button) {
+            const card = button.closest('.card');
+            const textarea = card.querySelector('textarea');
+            const text = textarea.value;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        showFeedback(button, '✅ Готово!', 'success');
+                    })
+                    .catch(() => {
+                        fallbackCopy(text, button);
+                    });
+            } else {
+                fallbackCopy(text, button);
+            }
+        }
+
+        function fallbackCopy(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showFeedback(button, '✅ Готово!', 'success');
+            } catch (err) {
+                showFeedback(button, '❌ Ошибка', 'danger');
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        function showFeedback(button, message, type) {
+            const originalHTML = button.innerHTML;
+            button.innerHTML = message;
+            button.className = `btn btn-${type} btn-sm`;
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.className = 'btn btn-warning btn-sm';
+            }, 2000);
+        }
+
+        function toggleFullscreen(button) {
+            const card = button.closest('.card');
+            const textarea = card.querySelector('textarea');
+            
+            if (textarea.rows === 3) {
+                textarea.rows = 10;
+                button.innerHTML = '<i class="bi bi-arrows-collapse"></i> Свернуть';
+                button.className = 'btn btn-outline-secondary btn-sm';
+            } else {
+                textarea.rows = 3;
+                button.innerHTML = '<i class="bi bi-arrows-expand"></i> Развернуть';
+                button.className = 'btn btn-outline-secondary btn-sm';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const alert = document.querySelector('.alert.alert-dismissible');
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease';
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 500);
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
