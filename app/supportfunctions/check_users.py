@@ -32,7 +32,4 @@ async def check_new_username(telegram_id, username):
     user_info = await get_full_info_user(telegram_id)
 
     if user_info.get_data('username') != username:
-        if username:
-            await edit_username(telegram_id, username)
-        else:
-            await edit_username(telegram_id, 'unknown_username')
+        await edit_username(telegram_id, username if username else 'unknown_username')

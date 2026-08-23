@@ -64,7 +64,7 @@ async def menu(message: Message, state: FSMContext):
         welcome_msg = await get_text_ui('welcome-message')
         await message.delete()
         await state.clear()
-        res = await unauth_user_trap(message.from_user.id, message.from_user.username)
+        res = await unauth_user_trap(message.from_user.id, message.from_user.username if message.from_user.username else 'unknown_username')
 
         if res:
             await check_new_user_valentines_Message(message=message)

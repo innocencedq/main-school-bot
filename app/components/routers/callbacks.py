@@ -104,7 +104,7 @@ async def settings_callback(callback: CallbackQuery, where: str = None):
     photo = InputMediaPhoto(media=f, caption=settings_msg, parse_mode='html')
     user = callback.from_user.id
     
-    res = await util.unauth_user_trap(user, callback.message.from_user.username)
+    res = await util.unauth_user_trap(user, callback.message.from_user.username if callback.message.from_user.username else 'unknown_username')
 
     if res:
         await callback.answer(res, True)
