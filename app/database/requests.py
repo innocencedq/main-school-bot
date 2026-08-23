@@ -250,7 +250,7 @@ async def add_admin(telegram_id):
                 )
         session.add(new_adm)
         await session.commit()
-        await redis.set(name="check_admin:" + str(telegram_id), value=1, ex=21600)
+        await redis.set(name="check_admin:" + str(telegram_id), value=1, ex=1500)
 
 async def remove_admin(telegram_id):
     await redis.delete('check_admin:' + str(telegram_id))
@@ -268,7 +268,7 @@ async def check_admin(user, method: str = 'id'):
     if not res:
         async with async_session() as session:
             sql_res = await session.scalar(select(Admin).where(Admin.tg_id == user))
-            await redis.set(name="check_admin:" + str(user), value=1 if sql_res else 0, ex=21600)
+            await redis.set(name="check_admin:" + str(user), value=1 if sql_res else 0, ex=1500)
             return bool(sql_res)
     else:
         return bool(int(res))   
