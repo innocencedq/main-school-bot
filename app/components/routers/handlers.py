@@ -15,7 +15,7 @@ from app.database.requests import add_admin, check_admin, get_all_users, get_ful
 from app.database.data import async_session, User
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
-from config import PATH_TO_LOGS, welcome_message, PATH_TO_IMAGES, ADMIN_KEY, PATH_TO_NAMING
+from config import PATH_TO_LOGS, PATH_TO_IMAGES, ADMIN_KEY, PATH_TO_NAMING
 
 router = Router()
 
@@ -263,17 +263,6 @@ async def cmd_cancel(message: Message, state: FSMContext):
     await message.answer('<b>Вы отменили все действия!</b>\n\nДля перехода в меню нажмите /menu', parse_mode='HTML')
 
 
-@router.message(Command('newmenu'))
-async def new_menu(message: Message, state: FSMContext):
-    try:
-        await message.delete()
-        await state.clear()
-        f = await get_image(name='main_menu')
-        await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
-    except Exception as e:
-        await message.answer('❌')
-
-
 @router.message(Command('autoboot'))
 async def deeployimages(message: Message):
     is_admin = await check_admin(message.from_user.id)
@@ -303,10 +292,10 @@ async def deeployimages(message: Message):
 
             await load_image(file_id, image_name)
         
-        await message.answer('<b>Переход к загрузке заглушек на расписание!</b>', parse_mode='html')
+        await message.answer('<b>Перехожу к загрузке заглушек на расписание...</b>', parse_mode='html')
 
         res = await loadschedule()
-        await message.answer(res)
+        await message.answer(res, parse_mode='html')
 
         await message.answer('<b>Настройка изображений закончена!</b>\n\nПерехожу к загрузке текстов...', 
                             parse_mode='html')
@@ -329,8 +318,8 @@ async def deeploynaming(message: Message):
     counter = 0
     for name in all_names:
         counter += 1
-        text = data.get(name)
-        await add_text_ui(name, text)
+        string = data.get(name)
+        await add_text_ui(name, string)
         try:
             from run import bot
             await bot.edit_message_text(text=f'<b>Загружено:</b> {counter}/{len(all_names)}', message_id=msg.message_id, chat_id=msg.chat.id, parse_mode='html')

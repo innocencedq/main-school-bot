@@ -3,7 +3,7 @@ import asyncio
 import logging
 from aiogram.exceptions import TelegramForbiddenError, TelegramRetryAfter, TelegramBadRequest
 from sqlalchemy import delete
-from config import vk_token
+from config import VK_TOKEN
 
 from app.components.logs.logs import logger
 from app.database.data import async_session, User
@@ -24,7 +24,7 @@ async def get_last_post_id(group_id):
     params = {
         "owner_id": group_id,
         "count": 5,
-        "access_token": f"{vk_token}",
+        "access_token": f"{VK_TOKEN}",
         "v": "5.199"
     }
     data = await vk_api_request("wall.get", params)
@@ -41,7 +41,7 @@ async def get_new_posts(group_id, last_post_id):
     params = {
         "owner_id": group_id,
         "count": 5,
-        "access_token": f"{vk_token}",
+        "access_token": f"{VK_TOKEN}",
         "v": "5.199"
     }
     data = await vk_api_request("wall.get", params)

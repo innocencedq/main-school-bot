@@ -4,11 +4,11 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_
 from datetime import datetime
 import pytz
 
-from config import sqlalchemy_url
+from config import SQLALCHEMY_URL
 
 
 #Все названия отвечают сами за себя
-engine = create_async_engine(sqlalchemy_url)
+engine = create_async_engine(SQLALCHEMY_URL)
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 

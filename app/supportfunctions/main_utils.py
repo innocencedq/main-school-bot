@@ -76,8 +76,10 @@ async def loadschedule(method: str = 'firststart'):
 
             for day in week_days:
                 await refresh_image(img_id=stub_id, img_name=day)
+        return '<b>Заглушки успешно загружены!</b>'
     except Exception as e:
         await logger.error(f'loadschedule: {e}')
+        return '<b>Во время загрузки произошла ошибка... Необходимо заполнить залушки вручную</b>'
     
 
 async def unauth_user_trap(user_id, username):

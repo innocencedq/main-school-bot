@@ -5,7 +5,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
 
 from app.components.diary.vault import notify_last_marks
-from config import tg_token
 from app.components.routers.handlers import router
 from app.database.data import async_main
 from app.components.notifyprocesses.vk_notify import send_new_posts
@@ -20,8 +19,9 @@ from app.components.routers.func_admin.schedule_changer import router_adm as che
 from app.components.routers.valentine_day import valentine_day_router
 from app.components.routers.func_admin.webadmin.web import app as web_admin
 from app.supportfunctions.main_utils import get_server_ip
+from config import TG_TOKEN
 
-bot = Bot(token=tg_token)
+bot = Bot(token=TG_TOKEN)
 
 #Функция инициализации
 async def main():

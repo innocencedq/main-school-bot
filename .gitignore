@@ -10,8 +10,10 @@ app/assets/vov_files/gorbachev.jpg
 app/assets/vov_files/shikunov.jpg
 app/assets/vov_files/tolstihin.jpg
 app/assets/vov_files/yachmenev.jpg
-config.py
+config.env
+*.env
 database.db
 app/components/logs/logs.log
+app/components/logs/bot.log
 __pycache__
 .vscode/

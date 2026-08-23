@@ -11,7 +11,7 @@ def setup_logging():
     logger = Logger(name="app_logger")
 
     file_handler = AsyncFileHandler(
-        os.path.join(log_dir, "logs.log"), 
+        os.path.join(log_dir, "bot.log"), 
         encoding="utf-8"
     )
     file_handler.formatter = formatter
