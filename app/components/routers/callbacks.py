@@ -38,7 +38,7 @@ async def rasp_callback(callback: CallbackQuery):
     select_day_msg = await get_text_ui('select-day-schedule')
 
     user_id = callback.from_user.id
-    new_username = callback.from_user.username if callback.from_user.username else 'unspecific_user'
+    new_username = callback.from_user.username if callback.from_user.username else 'unknown_username'
 
     res = await util.unauth_user_trap(user_id, new_username)
 

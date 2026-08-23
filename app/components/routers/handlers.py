@@ -39,7 +39,7 @@ async def start(message: Message, state: FSMContext):
     else:
         async with async_session() as session:
             if message.from_user.id not in await get_all_users():
-                username = message.from_user.username if message.from_user.username else "unspecific_user"
+                username = message.from_user.username if message.from_user.username else "unknown_username"
                 new_user = User(
                              tg_id=message.from_user.id,
                              username=username,
@@ -216,7 +216,7 @@ async def menu_text(message: Message, state: FSMContext):
 @router.message(F.text == '🗓 Расписание на сегодня')
 async def week_quick_callback(message: Message):
     user_id = message.from_user.id
-    new_username = message.from_user.username if message.from_user.username else 'unspecific_user'
+    new_username = message.from_user.username if message.from_user.username else 'unknown_username'
     async with async_session() as session:
         last_username = await session.scalar(select(User.username).where(User.tg_id == user_id))
         
@@ -238,7 +238,7 @@ async def week_quick_callback(message: Message):
 async def week_quick_callback(message: Message):
     await message.delete()
     user_id = message.from_user.id
-    new_username = message.from_user.username if message.from_user.username else 'unspecific_user'
+    new_username = message.from_user.username if message.from_user.username else 'unknown_username'
     async with async_session() as session:
         last_username = await session.scalar(select(User.username).where(User.tg_id == user_id))
         

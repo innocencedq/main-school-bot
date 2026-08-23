@@ -96,7 +96,7 @@ async def get_full_info_user(user, method: str = 'id'):
 
 async def create_user(id, username):
     async with async_session() as session:
-        username = username if username else "unspecific_user"
+        username = username if username else "unknown_username"
         new_user = User(
                      tg_id=id,
                      username=username,)
