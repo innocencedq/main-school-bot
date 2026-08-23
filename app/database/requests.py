@@ -677,3 +677,10 @@ async def add_text_ui(name, text):
         session.add(stmt)
         await session.commit()
         await redis.set(name='text_name:' + str(name), value=text, ex=28800)
+
+
+async def edit_username(telegram_id, new_username):
+    async with async_session() as session:
+        stmt = update(User).where(User.tg_id == telegram_id).values(username = new_username)
+        await session.execute(stmt)
+        await session.commit()
