@@ -373,18 +373,18 @@
                                             <textarea name="text_value" id="textarea-{{ text.id }}" class="form-control" rows="3">{{ text.text }}</textarea>
                                         </div>
                                         <div class="mt-2">
-                                            <button type="submit" class="btn btn-primary btn-sm">
+                                            <button type="submit" class="btn btn-primary btn-sm" style="margin-top: 10px;">
                                                 <i class="bi bi-save"></i> Сохранить
                                             </button>
-                                            <button type="button" class="btn btn-success btn-sm" 
+                                            <button type="button" class="btn btn-success btn-sm" style="margin-top: 10px;"
                                                     onclick="previewText('{{ text.id }}', '{{ text.name|escape }}')">
                                                 <i class="bi bi-eye"></i> Предпросмотр
                                             </button>
-                                            <button type="button" class="btn btn-warning btn-sm" 
+                                            <button type="button" class="btn btn-warning btn-sm" style="margin-top: 10px;"
                                                     onclick="copyToClipboard(this)">
                                                 <i class="bi bi-clipboard"></i> Копировать
                                             </button>
-                                            <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" style="margin-top: 10px;" 
                                                     onclick="toggleFullscreen(this)">
                                                 <i class="bi bi-arrows-expand"></i> Развернуть
                                             </button>
