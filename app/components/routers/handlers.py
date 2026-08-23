@@ -1,5 +1,6 @@
 import os
 import asyncio
+import json
 from aiogram import Router, F
 from aiogram.types import Message, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import CommandStart, Command
@@ -9,11 +10,11 @@ from aiogram.fsm.context import FSMContext
 from app.components.diary.parsing import refresh_token as rf
 from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_Message
 from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
-from app.database.requests import add_admin, check_admin, get_all_users, get_developer_chat_id, get_full_info_user, get_image, get_shift, load_image, get_text_ui
+from app.database.requests import add_admin, check_admin, get_all_users, get_full_info_user, get_image, get_shift, load_image, get_text_ui, add_text_ui
 from app.database.data import async_session, User
 from app.components.keyboard import main_menu as keyboard_menu, ask_notify
 from app.components.keyboard import notify as hide
-from config import PATH_TO_LOGS, welcome_message, PATH_TO_IMAGES, ADMIN_KEY
+from config import PATH_TO_LOGS, welcome_message, PATH_TO_IMAGES, ADMIN_KEY, PATH_TO_NAMING
 
 router = Router()
 
@@ -67,7 +68,7 @@ async def menu(message: Message, state: FSMContext):
         if res:
             await check_new_user_valentines_Message(message=message)
 
-        f = await get_image(week_name='main_menu')
+        f = await get_image(name='main_menu')
         await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n\n{welcome_msg}\n\n" + (res if res else ''), reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
         print(e)
@@ -95,7 +96,6 @@ async def givemefromdatabase(message: Message):
     is_admin = await check_admin(message.from_user.id)
     allow_valentines = data.get('allow_valentines')
 
-    developer_chat_id = await get_developer_chat_id()
 
     text = (f"👤 <b>{message.from_user.first_name}</b>\n\n"
             f"🧷 ID: <code>{id}</code>\n"
@@ -111,23 +111,15 @@ async def givemefromdatabase(message: Message):
             f"🧷 Расширенный дневник: <b>{'Выключен' if extented_diary == 0 else 'Включен'}</b>\n"
             f"🧷 Права тестера: <b>{'Нету' if tester == 0 else 'Есть'}</b>\n"
             f"🧷 Уведомления дневника: <b>{'Выключены' if notify_diary == 0 else 'Включены'}</b>\n"
-            f"🧷 Права доступа: <b>{'Пользователь' if not is_admin else 'Администратор' if tg_id != developer_chat_id else 'Разработчик'}</b>\n"
+            f"🧷 Права доступа: <b>{'Пользователь' if not is_admin else 'Администратор'}</b>\n"
             f"🧷 Статус День святого Валентина: <b>{'Принятие валентинок включено' if allow_valentines else 'Принятие валентинок отключено'}</b>")
     
-    if is_admin and developer_chat_id != tg_id:
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Стать разработчиком', callback_data='change_admin_rank')],
-            [InlineKeyboardButton(text='Скрыть', callback_data='hide')]
-        ])
-    elif developer_chat_id == tg_id:
-        kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text='Стать администратором', callback_data='change_admin_rank')],
-            [InlineKeyboardButton(text='Скрыть', callback_data='hide')]
-        ])
 
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text='Скрыть', callback_data='hide')]
+    ])
 
-
-    await message.answer(text, parse_mode='html', reply_markup=kb if is_admin else hide)
+    await message.answer(text, parse_mode='html', reply_markup=kb)
 
 
 @router.message(Command('getuser'))
@@ -275,13 +267,13 @@ async def new_menu(message: Message, state: FSMContext):
     try:
         await message.delete()
         await state.clear()
-        f = await get_image(week_name='main_menu')
+        f = await get_image(name='main_menu')
         await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n{welcome_message}\n\nДолго обрабатываются кнопки? ->\n/menu", reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
         await message.answer('❌')
 
 
-@router.message(Command('loadimages'))
+@router.message(Command('autoboot'))
 async def deeployimages(message: Message):
     is_admin = await check_admin(message.from_user.id)
     if is_admin:
@@ -315,12 +307,36 @@ async def deeployimages(message: Message):
         res = await loadschedule()
         await message.answer(res)
 
-        await message.answer('<b>Настройка изображений закончена!</b>\n\nТеперь можно удалить сообщения с изображениями или очистить чат с ботом.', 
+        await message.answer('<b>Настройка изображений закончена!</b>\n\nПерехожу к загрузке текстов...', 
                             parse_mode='html')
+        await deeploynaming(message)
     else:
         await message.answer('❌ <b>У вас не хватает прав, чтобы воспользоваться этой командой!</b>\n\n❓ Если вы администратор, то воспользуйтесь командой <b>/givemeadm &lt;args&gt;</b>, где укажите суперключ <tg-spoiler>(находится в файле config.py)</tg-spoiler> или добавьте себя через базу данных.\nПример: /givemeadm 8bc6029e',
                              parse_mode='html')
-        
+
+async def deeploynaming(message: Message):
+    msg = await message.answer('<b>Начинаю загрузку текстов...</b>', parse_mode='html')
+
+    all_names = ['welcome-message', 'select-day-schedule', 'schedule-monday', \
+                 'schedule-tuesday', 'schedule-wednesday', 'schedule-thursday', 'schedule-friday', 'schedule-calls', 'settings-message', \
+                 'techsup-message', 'auth-diary-android', 'auth-diary-ios', 'auth-diary-pc', 'misses-in-schedule-message', 'valentineday-menu-message', \
+                 'oge-message', 'ege-message']
+
+    with open(PATH_TO_NAMING, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    counter = 0
+    for name in all_names:
+        counter += 1
+        text = data.get(name)
+        await add_text_ui(name, text)
+        try:
+            from run import bot
+            await bot.edit_message_text(text=f'<b>Загружено:</b> {counter}/{len(all_names)}', message_id=msg.message_id, chat_id=msg.chat.id, parse_mode='html')
+        except Exception as e:
+            print(e)
+
+    await message.answer('<b>Настройка закончена!</b> Теперь можно очистить чат', parse_mode='html')
 
 @router.message(Command('givemeadm'))
 async def givemeadm(message: Message):
@@ -331,7 +347,7 @@ async def givemeadm(message: Message):
         if is_admin:
             await message.answer('<b>Вы уже являетесь администратором!</b>', parse_mode='html')
         else:
-            await add_admin(message.from_user.id, message.from_user.username if message.from_user.username else 'unspecified_admin')
+            await add_admin(message.from_user.id)
             await message.answer('<b>Вы были успешно добавлены в администраторы</b>\n\nДля проверки нажмите на команду -> /whoami', parse_mode='html')
     else:
         await message.answer('<b>Неверный ключ!</b>', parse_mode='html')

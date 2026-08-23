@@ -19,14 +19,16 @@ from app.components.routers.tickets.topics import topic_router
 from app.components.routers.func_admin.schedule_changer import router_adm as checker_router
 from app.components.routers.valentine_day import valentine_day_router
 from app.components.routers.func_admin.webadmin.web import app as web_admin
+from app.supportfunctions.main_utils import get_server_ip
 
 bot = Bot(token=tg_token)
 
 #Функция инициализации
 async def main():
     await async_main()
-
-    config = uvicorn.Config(web_admin, host='127.0.0.1', port=8000, log_level='info')
+    
+    ip = get_server_ip()
+    config = uvicorn.Config(web_admin, host=ip, port=8000, log_level='info')
     webka = uvicorn.Server(config)
     
     asyncio.create_task(remove_blocked_users())

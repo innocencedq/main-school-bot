@@ -144,23 +144,6 @@ async def get_developer_chat_id():
         return develop
     
 
-async def update_status_developer(id, username):
-    async with async_session() as session:
-        develop_chat_id = await get_developer_chat_id()
-
-        if develop_chat_id == id:
-            stmt = update(Admin).where(Admin.tg_id == id).values(username = username)
-            await session.execute(stmt)
-            await session.commit()
-            
-            return 'admin'
-        else:
-            stmt = update(Admin).where(Admin.tg_id == id).values(username = 'developer')
-            await session.execute(stmt)
-            await session.commit()
-
-            return 'developer'
-
 
 async def get_list_username(user):
     async with async_session() as session:
@@ -175,12 +158,12 @@ async def get_username_with_id(username):
         return chat_id
 
 
-async def get_image(week_name):
-    res = await redis.get(name="week_name:" + week_name)
+async def get_image(name):
+    res = await redis.get(name="image_name:" + str(name))
     if not res:
         async with async_session() as session:
-            image_id = await session.scalar(select(Images.image_id).where(Images.image_name == week_name))
-            await redis.set(name="week_name:" + week_name, value=image_id)
+            image_id = await session.scalar(select(Images.image_id).where(Images.image_name == name))
+            await redis.set(name="image_name:" + name, value=str(image_id))
             return str(image_id)
     else:
         return res.decode('utf-8') if isinstance(res, bytes) else res
@@ -192,7 +175,7 @@ async def refresh_image(img_id, img_name):
         await session.execute(stmt)
         await session.commit()
         
-        await redis.delete('week_name:' + str(img_name))
+        await redis.delete('image_name:' + str(img_name))
     
 
 async def load_image(img_id, img_name):
@@ -204,8 +187,8 @@ async def load_image(img_id, img_name):
         session.add(new_image)
         await session.commit()
 
-async def del_image_from_redis(week_name):
-    await redis.delete(f'week_name:{week_name}')
+async def del_image_from_redis(name):
+    await redis.delete(f'image_name:{name}')
 
 
 async def get_requests_ai(user):
@@ -259,17 +242,22 @@ async def get_user_with_extended_diary(user):
         return res
     
 
-async def add_admin(telegram_id, username: str = None):
+async def add_admin(telegram_id):
     await redis.delete('check_admin:' + str(telegram_id))
     async with async_session() as session:
         new_adm = Admin(
                     tg_id=telegram_id,
-                    username=username if username else 'unspecified_admin',
                 )
         session.add(new_adm)
         await session.commit()
         await redis.set(name="check_admin:" + str(telegram_id), value=1, ex=21600)
 
+async def remove_admin(telegram_id):
+    await redis.delete('check_admin:' + str(telegram_id))
+    async with async_session() as session:
+        stmt = delete(Admin).where(telegram_id == Admin.tg_id)
+        await session.execute(stmt)
+        await session.commit()
 
 async def check_admin(user, method: str = 'id'):
     if method == 'username':
@@ -653,12 +641,15 @@ async def change_tables_info_valentine(chat_id, username):
             return 'has_valentines'
         else:
             return 'hasnt_valentines'
-        
 
+        
 async def get_text_ui(name):
-    async with async_session() as session:
-        stmt = await session.scalar(select(StringsUI.text).where(StringsUI.name == name))
-        return stmt
+    res = await redis.get('text_name:' + str(name))
+    if not res:
+        async with async_session() as session:
+            stmt = await session.scalar(select(StringsUI.text).where(StringsUI.name == name))
+            return stmt
+    return res.decode('utf-8') if isinstance(res, bytes) else res
 
 
 async def get_all_strings_ui():
@@ -673,5 +664,16 @@ async def change_text_ui(name, new_text):
         stmt = update(StringsUI).where(StringsUI.name == name).values(text=new_text)
         await session.execute(stmt)
         await session.commit()
+        await redis.delete('text_name:' + str(name))
+        await redis.set(name='text_name:' + str(name), value=new_text, ex=28800)
 
 
+async def add_text_ui(name, text):
+    async with async_session() as session:
+        stmt = StringsUI(
+            name=name,
+            text=text
+        )
+        session.add(stmt)
+        await session.commit()
+        await redis.set(name='text_name:' + str(name), value=text, ex=28800)

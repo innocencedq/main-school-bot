@@ -293,6 +293,7 @@
                                         <th>Дата регистрации</th>
                                         <th>AI запросы</th>
                                         <th>Смена</th>
+                                        <th>Администратор</th>
                                         <th>Тестер</th>
                                         <th>Действия</th>
                                     </tr>
@@ -309,6 +310,11 @@
                                         <td>
                                             <span class="badge bg-secondary">
                                                 {{ user.shift }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge {% if user.is_admin %}bg-success{% else %}bg-danger{% endif %}">
+                                                {{ 'Да' if user.is_admin else 'Нет' }}
                                             </span>
                                         </td>
                                         <td>
@@ -339,6 +345,13 @@
                                                     <input type="hidden" name="tg_id" value="{{ user.tg_id }}">
                                                     <button type="submit" class="btn btn-outline-primary btn-sm" title="Переключить тестера">
                                                         <i class="bi bi-person-check"></i>
+                                                    </button>
+                                                </form>
+
+                                                <form action="/toggle_admin" method="POST" class="d-inline">
+                                                    <input type="hidden" name="tg_id" value="{{ user.tg_id }}">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm" title="Переключить права администратора">
+                                                        <i class="bi bi-person-fill-lock"></i>
                                                     </button>
                                                 </form>
                                             </div>

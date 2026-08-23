@@ -17,8 +17,6 @@ from app.database.requests import get_text_ui, get_user_with_notify, get_image, 
 from app.database.data import async_session, User
 import app.database.requests as req
 
-from config import welcome_message, bug_report_message
-
 from app.components.routers.states import TechSup
 
 router_callback = Router()
@@ -48,7 +46,7 @@ async def rasp_callback(callback: CallbackQuery):
         await callback.answer(res, True)
         await check_new_user_valentines_CallbackQuery(callback=callback)
 
-    f = await get_image(week_name='main_rasp')
+    f = await get_image(name='main_rasp')
     photo = InputMediaPhoto(media=f, caption=select_day_msg, parse_mode='html')
     shift = await req.get_shift(user_id)
 
@@ -68,7 +66,7 @@ async def back_callback(callback: CallbackQuery, state: FSMContext, where: str =
     await state.clear()
     welcome_msg = await get_text_ui('welcome-message')
 
-    f = await get_image(week_name='main_menu')
+    f = await get_image(name='main_menu')
     photo = InputMediaPhoto(media=f, caption=f"<b>Привет, {callback.from_user.first_name}! 👋</b>\n\n{welcome_msg}\n\n", parse_mode='html')
     if where == 'yes_quick_menu':
         await callback.message.answer_photo(photo=f, 
@@ -81,7 +79,7 @@ async def back_callback(callback: CallbackQuery, state: FSMContext, where: str =
 @router_callback.callback_query(F.data == 'schedule_change_shift')
 async def schedule_change_shift(callback: CallbackQuery):
     shift = await req.get_shift(callback.from_user.id)
-    f = await get_image(week_name='main_rasp')
+    f = await get_image(name='main_rasp')
     photo = InputMediaPhoto(media=f, caption='<b>📅 Выберите вашу смену</b>', parse_mode='html')
 
     await callback.message.edit_media(media=photo,
@@ -102,7 +100,7 @@ async def shedule_change_shift(callback: CallbackQuery):
 @router_callback.callback_query(F.data == 'settings')
 async def settings_callback(callback: CallbackQuery, where: str = None):
     settings_msg = await get_text_ui('settings-message')
-    f = await get_image(week_name='main_settings')
+    f = await get_image(name='main_settings')
     photo = InputMediaPhoto(media=f, caption=settings_msg, parse_mode='html')
     user = callback.from_user.id
     
@@ -191,7 +189,7 @@ async def quick_menu_callback(callback: CallbackQuery, state: FSMContext):
 @router_callback.callback_query(F.data == 'bug_report')
 async def bug_report_callback(callback: CallbackQuery):
     techsup_msg = await get_text_ui('techsup-message')
-    f = await get_image(week_name='settings_tech')
+    f = await get_image(name='settings_tech')
     photo = InputMediaPhoto(media=f, caption=techsup_msg, parse_mode='html')
 
     await callback.message.edit_media(media=photo, reply_markup=bug_report)
@@ -279,7 +277,7 @@ async def week_callback(callback: CallbackQuery):
     
     if day in day_data:
         caption, markup = day_data[day]
-        f = await get_image(week_name=callback.data)
+        f = await get_image(name=callback.data)
         photo = InputMediaPhoto(media=f, caption=caption, parse_mode='html')
         await callback.message.edit_media(media=photo, reply_markup=markup)
 
@@ -327,9 +325,3 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
 async def help_with_schedule(callback: CallbackQuery) -> None:
     misses_schedule_msg = await get_text_ui('misses-in-schedule-message')
     await callback.message.answer(misses_schedule_msg, parse_mode='html', reply_markup=notify)
-
-
-@router_callback.callback_query(F.data == 'change_admin_rank')
-async def change_admin_rank(callback: CallbackQuery):
-    res = await req.update_status_developer(callback.from_user.id, callback.from_user.username)
-    await callback.answer('✅ Вы стали Разработчиком' if res == 'developer' else '✅ Вы стали Администратором')

@@ -1,19 +1,19 @@
-from fastapi import FastAPI, Request, Form, HTTPException
+import secrets
+from pathlib import Path
+from urllib.parse import quote, unquote
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select, update, delete
-from app.database.data import User, Admin, async_session
-from app.database.requests import get_all_users_info, check_admin
-from app.components.notifyprocesses.notify import message_admin
-from app.database.requests import get_text_ui, change_text_ui, get_all_strings_ui
-from config import ADMIN_KEY
-from pathlib import Path
-import secrets
-from datetime import datetime
-import pytz
-from urllib.parse import quote, unquote
+from sqlalchemy import select
 
-app = FastAPI(title='Admin Panel')
+from config import ADMIN_KEY
+from app.supportfunctions.main_utils import get_username_from_id
+from app.database.data import User, async_session
+from app.database.requests import get_all_users_info, check_admin, add_admin, remove_admin
+from app.components.notifyprocesses.notify import message_admin
+from app.database.requests import change_text_ui, get_all_strings_ui
+
+app = FastAPI(title='AdminPanel')
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -40,10 +40,11 @@ async def login(
     login: str = Form(...),
     password: str = Form(...)
 ):
-    if password == "1" and await check_admin(login, 'username'):
+    if password == ADMIN_KEY and await check_admin(int(login)):
         session_id = secrets.token_urlsafe(32)
+        username = await get_username_from_id(login)
         sessions[session_id] = {
-            'login': login
+            'login': username
         }
         
         response = RedirectResponse(url='/dashboard', status_code=303)
@@ -82,6 +83,7 @@ async def dashboard(request: Request):
             'shift': db_user.shift,
             'tester': db_user.tester,
             'username': db_user.username,
+            'is_admin': await check_admin(db_user.tg_id)
         })
     
     last_action = request.cookies.get('last_action')
@@ -160,6 +162,36 @@ async def toggle_tester(
         
     response = RedirectResponse(url="/dashboard", status_code=303)
     message = f"Статус тестера для {username} {new_status}!"
+    encoded_value = quote(message)
+    response.set_cookie(
+        key="last_action",
+        value=encoded_value,
+        max_age=30
+    )
+    return response
+
+@app.post('/toggle_admin')
+async def toggle_admin(
+    request: Request,
+    tg_id: int = Form(...)
+):
+    session_id = request.cookies.get('session_id')
+    user = sessions.get(session_id)
+    
+    if not user:
+        return RedirectResponse(url='/login', status_code=303)
+
+    is_admin = await check_admin(tg_id)
+
+    if not is_admin:
+        await add_admin(tg_id)
+        username = await get_username_from_id(tg_id)
+    else:
+        await remove_admin(tg_id)
+        username = await get_username_from_id(tg_id)
+        
+    response = RedirectResponse(url="/dashboard", status_code=303)
+    message = f"Вы забрали права администратора у {username}!" if is_admin else f"Вы выдали права администратора {username}!" 
     encoded_value = quote(message)
     response.set_cookie(
         key="last_action",
@@ -352,46 +384,6 @@ async def add_text(
     except Exception as e:
         response = RedirectResponse(url="/edit_texts", status_code=303)
         encoded_value = quote(f"Ошибка при создании текста: {str(e)}")
-        response.set_cookie(
-            key="last_action",
-            value=encoded_value,
-            max_age=30
-        )
-        return response
-
-@app.post('/delete_text')
-async def delete_text(
-    request: Request,
-    text_id: int = Form(...)
-):
-    session_id = request.cookies.get('session_id')
-    user = sessions.get(session_id)
-    
-    if not user:
-        return RedirectResponse(url='/login', status_code=303)
-    
-    try:
-        from app.database.data import StringsUI
-        from app.database.data import async_session
-        from sqlalchemy import delete
-        
-        async with async_session() as session:
-            stmt = delete(StringsUI).where(StringsUI.id == text_id)
-            await session.execute(stmt)
-            await session.commit()
-        
-        response = RedirectResponse(url="/edit_texts", status_code=303)
-        encoded_value = quote("Текст успешно удален!")
-        response.set_cookie(
-            key="last_action",
-            value=encoded_value,
-            max_age=30
-        )
-        return response
-        
-    except Exception as e:
-        response = RedirectResponse(url="/edit_texts", status_code=303)
-        encoded_value = quote(f"Ошибка при удалении текста: {str(e)}")
         response.set_cookie(
             key="last_action",
             value=encoded_value,

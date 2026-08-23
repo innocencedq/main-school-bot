@@ -20,7 +20,7 @@ callback_diary = Router()
 
 @callback_diary.callback_query(F.data == 'main_diary')
 async def main_diary(callback: CallbackQuery):
-    f = await get_image(week_name='diary')
+    f = await get_image(name='diary')
     photo = InputMediaPhoto(media=f, caption='<b>📔 Дневник</b>\n\n', parse_mode='html')
     await callback.message.edit_media(photo, reply_markup=await main_diary_kb(callback.from_user.id))
 

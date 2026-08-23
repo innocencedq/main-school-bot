@@ -1,10 +1,11 @@
 import pytz
+import socket
 from datetime import datetime
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Chat
 
-
+from app.components.logs.logs import logger
 from app.components.keyboard import ScheduleKeyboards
-from app.database.requests import create_user, get_developer_chat_id, get_image, is_user_exists, load_image, refresh_image
+from app.database.requests import create_user, get_image, is_user_exists, load_image, refresh_image
 
 
 krasnoyarsk_tz = pytz.timezone('Asia/Krasnoyarsk')
@@ -63,7 +64,7 @@ async def loadschedule(method: str = 'firststart'):
                         'schedule:2:monday', 'schedule:2:tuesday', 'schedule:2:wednesday', 'schedule:2:thursday', 'schedule:2:friday',
                         'schedule:calls']
 
-            stub_id = await get_image(week_name='stub')
+            stub_id = await get_image(name='stub')
 
             for day in week_days:
                 await load_image(img_id=stub_id, img_name=day)
@@ -73,7 +74,7 @@ async def loadschedule(method: str = 'firststart'):
             week_days = ['schedule:1:monday', 'schedule:1:tuesday', 'schedule:1:wednesday', 'schedule:1:thursday', 'schedule:1:friday',
                         'schedule:2:monday', 'schedule:2:tuesday', 'schedule:2:wednesday', 'schedule:2:thursday', 'schedule:2:friday',]
             
-            stub_id = await get_image(week_name='stub')
+            stub_id = await get_image(name='stub')
 
             for day in week_days:
                 await refresh_image(img_id=stub_id, img_name=day)
@@ -87,13 +88,6 @@ async def unauth_user_trap(user_id, username):
         await create_user(user_id, username)
 
         return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'
-    
-
-async def send_error_to_adm(error):
-    chat_id = await get_developer_chat_id()
-
-    from run import bot
-    await bot.send_message(chat_id=chat_id, text=f'<b>Ошибка при исполнении</b>\n\n<pre language="python">{error[:4000]}</pre>', parse_mode='html')
 
 
 async def pagination(items, curr_id):
@@ -131,3 +125,24 @@ async def pagination(items, curr_id):
     prev_id = index_dict.get(prev_idx)
     
     return prev_id, next_id, curr_idx
+
+
+async def get_username_from_id(tg_id) -> str | None:
+    from run import bot
+    try:
+        chat: Chat = await bot.get_chat(tg_id)
+        return chat.username
+    except Exception as e:
+        await logger.error(f'get_username_from_id: {e}')
+        return None
+
+
+def get_server_ip():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except:
+        return "localhost"

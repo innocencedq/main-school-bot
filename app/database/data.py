@@ -40,7 +40,6 @@ class Admin(Base):
     __tablename__ = 'admins'
 
     tg_id = Column(BigInteger, primary_key=True, unique=True, nullable=False)
-    username = Column(String, nullable=False)
 
 
 class Images(Base):

@@ -18,7 +18,8 @@ from app.components.keyboard import admin_panel, adm_back, adm_rasp, tech_works,
 from app.components.routers.func_admin.keyboard_changer import ScheduleChangerKeyboard
 from app.components.notifyprocesses.notify import notify_update_schedule, technical_works, technical_works_finish, notify_rework_schedule, message_admin, notify_update_calls, \
     new_advert_notify
-from app.supportfunctions.main_utils import loadschedule
+from app.supportfunctions.main_utils import loadschedule, get_server_ip
+from config import ADMIN_KEY
 
 
 router_adm = Router()
@@ -52,7 +53,7 @@ async def adminpanel(message: Message):
     count = await count_users()
     is_admin = await check_admin(message.from_user.id)
     if is_admin:
-        await message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\n<a href="http://{get_server_ip()}:8000">Веб-панель</a>\n<b>Ваш chat_id (можно нажать для копирования): </b><code>{message.chat.id}</code>\n<b>Секретный ключ</b>: <code>{ADMIN_KEY}</code>\n<i>(можно нажать для копирования)</i>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
     else:
         await message.answer('Вы не администратор!')
 
@@ -62,13 +63,13 @@ async def adminpanel_callback(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     count = await count_users()
     try:
-        await callback.message.edit_text(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await callback.message.edit_text(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\n<a href="http://{get_server_ip()}:8000">Веб-панель</a>\n<b>Ваш chat_id (можно нажать для копирования): </b><code>{callback.message.chat.id}</code>\n<b>Секретный ключ</b>: <code>{ADMIN_KEY}</code>\n<i>(можно нажать для копирования)</i>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
     except Exception:
         try:
             await callback.message.delete()
         except TelegramBadRequest:
             pass
-        await callback.message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
+        await callback.message.answer(f'<b>Админ панель</b>\n\n<a href="https://telegra.ph/Komandy-02-08">Команды</a>\n\n<a href="http://{get_server_ip()}:8000">Веб-панель</a>\n<b>Ваш chat_id:</b> <code>{callback.message.chat.id}</code>\n<b>Секретный ключ</b>: <code>{ADMIN_KEY}</code>\n<i>(можно нажать для копирования)</i>\n\nПользователей в боте: <b>{count}</b>', reply_markup=admin_panel, parse_mode='html')
 
 
 @router_adm.callback_query(F.data.in_(['notify_schedule', 'notify_update', 'next_week_notify', 'tech_works', 'tech_works_start', 'tech_works_finish', 'friday_rasp', 'thursday_rasp', 'wednesday_rasp', 'tuesday_rasp', 'monday_rasp', 'adm_message', 'notify_calls', 'confirm_adm', 'yes_schedule', 'yes_day_change', 'yes_calls_change', 'add_admin', 'zaglushka_schedule']))
@@ -85,18 +86,18 @@ async def callback(callback: CallbackQuery, state: FSMContext):
 
     elif callback.data == 'tech_works_start':
         try:
-            await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
+            msg = await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
 
-            await technical_works()
+            await technical_works(msg)
             await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
         except Exception:
             await callback.message.edit_text('❌ <b>Не получилось доставить оповещение, попробуйте еще раз!</b>', reply_markup=adm_back, parse_mode='html')
 
     elif callback.data == 'tech_works_finish':
         try:
-            await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
+            msg = await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
 
-            await technical_works_finish()
+            await technical_works_finish(msg)
             await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
         except Exception:
             await callback.message.edit_text('❌ <b>Не получилось доставить оповещение, попробуйте еще раз!</b>', reply_markup=adm_back, parse_mode='html')
@@ -155,11 +156,11 @@ async def callback(callback: CallbackQuery, state: FSMContext):
 
     elif callback.data == 'yes_schedule':
         try:
-            await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
+            msg = await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
             data = await state.get_data()
             shift = data.get("current_shift")
 
-            await notify_update_schedule(shift)
+            await notify_update_schedule(shift, msg)
             await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
         except Exception:
             await callback.message.edit_text('❌ <b>Не получилось доставить оповещение, попробуйте еще раз!</b>', reply_markup=adm_back, parse_mode='html')
@@ -176,9 +177,9 @@ async def callback(callback: CallbackQuery, state: FSMContext):
         await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
 
     elif callback.data == 'yes_calls_change':
-        await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
+        msg = await callback.message.edit_text('⏳ Подождите, начал оповещать всех...')
 
-        await notify_update_calls()
+        await notify_update_calls(msg)
         await callback.message.edit_text('✅ <b>Оповещение отправлено успешно!</b>', reply_markup=adm_back, parse_mode='html')
 
     elif callback.data == 'add_admin':
@@ -203,9 +204,9 @@ async def confirm_admin(callback: CallbackQuery, state: FSMContext):
             data = await state.get_data()
             adm_message = data.get('adm_message')
             await state.clear()
-            await callback.message.edit_text('⏳ Подождите, начал рассылать сообщение всем...')
+            msg = await callback.message.edit_text('⏳ Подождите, начал рассылать сообщение всем...')
 
-            await message_admin(adm_message)
+            await message_admin(adm_message, msg)
             await callback.message.edit_text('✅ <b>Рассылка совершена успешно!</b>', reply_markup=adm_back, parse_mode='html')
         except Exception:
             await callback.message.edit_text('❌ <b>Не получилось сделать рассылку, попробуйте еще раз!</b>', reply_markup=adm_back, parse_mode='html')
@@ -223,11 +224,7 @@ async def waiting_admin(message: Message, state: FSMContext):
         await message.answer('Данный пользователь уже является администратором!', reply_markup=adm_back, parse_mode='html')
     else:
         try:
-                
-            from run import bot
-            chat: Chat = await bot.get_chat(adm_id)
-
-            await add_admin(adm_id, chat.username)
+            await add_admin(adm_id)
 
             await state.clear()
             await message.answer('Администратор добавлен!', reply_markup=adm_back)
@@ -406,9 +403,9 @@ async def title_process(message: Message, state: FSMContext):
 
 @router_adm.message(AdvertManage.description_processing)
 async def desc_process(message: Message, state: FSMContext):
-    try:
+    # try:
         ents = message.entities or []
-        text = hd.unparse(message.text, ents)
+        text = hd.unparse(str(message.text), ents)
         
         if len(str(message.text)) > 650:
             await message.answer(f'Вы превысили допустимое количество символов в тексте, пожалуйста сократите его до 650-ти\n\nТекущее количество символов: {len(str(message.text))}')
@@ -416,15 +413,15 @@ async def desc_process(message: Message, state: FSMContext):
         else:
             await state.update_data({'advert_desc': str(text)})
 
-            photo = await get_image('advert_default_image')
+            photo = await get_image(name='default_advert_image')
             await message.answer_photo(photo=photo,
                                     caption='Вы можете загрузить свое изображение или пропустить этот шаг. По умолчанию будет загружено изображение, которое прикреплено к сообщению', 
                                     reply_markup=advert_skip_picture)
             await state.set_state(AdvertManage.image_processing)
-    except Exception as e:
-        print(e)
-        await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
-        await state.set_state(AdvertManage.description_processing)
+    # except Exception as e:
+    #     print(e)
+    #     await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
+    #     await state.set_state(AdvertManage.description_processing)
     
 
 
@@ -465,7 +462,7 @@ async def advert_confirm(callback: CallbackQuery, state: FSMContext):
                               parse_mode='HTML')
 
     elif callback.data == 'advert_skip':
-        photo = await get_image('advert_default_image')
+        photo = await get_image('default_advert_image')
         await callback.message.delete()
         await callback.answer('Пропускаю шаг...')
         await state.set_state(state=None)
@@ -480,8 +477,8 @@ async def advert_confirm(callback: CallbackQuery, state: FSMContext):
         await callback.message.answer('Загружаю...')
         await advert_write_sql(advert_title=advert_title, advert_description=advert_desc, advert_image_id=advert_image if advert_image else None)
         await refresh_last_advert_id()
-        await callback.message.answer('Объявление загружено! Начинаю рассылку...')
-        await new_advert_notify(advert_title)
+        msg = await callback.message.answer('Объявление загружено! Начинаю рассылку...')
+        await new_advert_notify(advert_title, msg)
         await callback.message.answer('Рассылка завершена успешно!', reply_markup=adm_back)
         await state.clear()
 
@@ -602,7 +599,8 @@ async def advert_edit_confirm(callback: CallbackQuery, state: FSMContext):
 
     await update_data_about_advert(id, advert_title, advert_desc, advert_image)
     await state.clear()
-    await callback.answer("Объявление изменено!")
+    await callback.answer("<b>Объявление изменено!</b>",
+                          parse_mode='html')
 
     await back_callback(callback, state)
 
