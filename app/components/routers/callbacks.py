@@ -5,18 +5,18 @@ from aiogram.types import CallbackQuery, InputMediaPhoto, ReplyKeyboardRemove, M
 from aiogram.exceptions import TelegramBadRequest
 from sqlalchemy import update
 
+import app.database.requests as req
+import app.supportfunctions.main_utils as util
 from app.components.keyboard import bug_report, advert_kb
 from app.components.keyboard import ScheduleKeyboards
 from app.components.keyboard import main_menu as menu_keyboard
 from app.components.keyboard import settings_keyboard, notify
 from app.components.keyboard import quick_menu_kb, ask_quick_menu, back_settings
 from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_CallbackQuery
-import app.supportfunctions.main_utils as util
 from app.database.requests import get_text_ui, get_user_with_notify, get_image, get_quick_menu, get_tester, get_user_with_extended_diary, \
     get_all_data_about_advert, get_last_advert_id
 from app.database.data import async_session, User
-import app.database.requests as req
-
+from app.components.logs.logs import logger
 from app.components.routers.states import TechSup
 
 router_callback = Router()
@@ -215,7 +215,7 @@ async def bug_message(message: Message, state: FSMContext):
     try:
         await req.create_ticket(username, message.from_user.id, msg)
     except Exception as e:
-        print(e)
+        await logger.error(f'bug_message: {e}')
         await message.answer('⚠️ Произошла непредвиденная ошибка. Попробуйте позже')
 
     data = await req.get_info_ticket(message.from_user.id, 'telegram')
@@ -315,7 +315,7 @@ async def advert_callback(callback: CallbackQuery, state: FSMContext):
 
     except TelegramBadRequest as e:
         if 'message is not modified' not in str(e):
-            print(e)
+            await logger.error(f'advert_callback: {e}')
         else:
             await callback.answer('Вы уже в конце')
 

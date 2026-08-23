@@ -1,8 +1,7 @@
-import asyncio
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 import app.database.requests as req
-
+from app.components.logs.logs import logger
 
 async def check_new_user_valentines_Message(message: Message):
     try:
@@ -32,7 +31,7 @@ async def check_new_user_valentines_Message(message: Message):
                 ]),
                                  parse_mode='html')
     except Exception as e:
-        print(e)
+        await logger.error(f'check_new_user_valentines_Message: {e}')
         pass
 
 
@@ -64,5 +63,5 @@ async def check_new_user_valentines_CallbackQuery(callback: CallbackQuery):
                 ]),
                                          parse_mode='html')
     except Exception as e:
-        print(e)
+        await logger.error(f'check_new_user_valentines_CallbackQuery: {e}')
         pass

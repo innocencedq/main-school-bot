@@ -129,7 +129,7 @@ async def get_homework(callback: CallbackQuery):
     except TelegramBadRequest as e:
             await callback.message.answer('⚠️ Обновите меню! /menu')
     except Exception as e:
-        print(e)
+        await logger.error(f'get_homework: {e}')
         await callback.message.answer(text="⚠️ Произошла ошибка при получении домашнего задания. Попробуйте обновить сессию.", reply_markup=back_to_diary)
 
 
@@ -168,7 +168,7 @@ async def marks_last_5_days(callback: CallbackQuery):
     except TelegramBadRequest:
             await callback.message.answer('⚠️ Обновите меню! /menu')
     except Exception as e:
-        print(e)
+        await logger.error(f'marks_last_5_days: {e}')
         await callback.message.edit_text(text="⚠️ Произошла ошибка при получении оценок. Попробуйте обновить сессию.", reply_markup=back_to_diary)
 
 

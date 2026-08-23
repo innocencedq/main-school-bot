@@ -7,6 +7,7 @@ from aiogram.filters import CommandStart, Command
 from sqlalchemy import select, update
 from aiogram.fsm.context import FSMContext
 
+from app.components.logs.logs import logger
 from app.components.diary.parsing import refresh_token as rf
 from app.components.notifyprocesses.valentineinprocess import check_new_user_valentines_Message
 from app.supportfunctions.main_utils import get_week, get_fast_rasp, loadschedule, unauth_user_trap
@@ -71,7 +72,7 @@ async def menu(message: Message, state: FSMContext):
         f = await get_image(name='main_menu')
         await message.answer_photo(photo=f, caption=f"<b>Привет, {message.from_user.first_name}!</b> 👋\n\n{welcome_msg}\n\n" + (res if res else ''), reply_markup=await keyboard_menu(message.from_user.id), parse_mode='html')
     except Exception as e:
-        print(e)
+        await logger.error(f'menu: {e}')
         await message.answer('❌')
 
 
@@ -191,7 +192,7 @@ async def thisfileidphoto(message: Message):
     try:
         await message.answer(f'file_id: <code>{message.photo[-1].file_id}</code>', parse_mode='html')
     except Exception as e:
-        print(e)
+        await logger.error(f'thisfileidphoto: {e}')
         await message.answer('❌')
 
 
@@ -334,7 +335,7 @@ async def deeploynaming(message: Message):
             from run import bot
             await bot.edit_message_text(text=f'<b>Загружено:</b> {counter}/{len(all_names)}', message_id=msg.message_id, chat_id=msg.chat.id, parse_mode='html')
         except Exception as e:
-            print(e)
+            await logger.error(f'deeploynaming: {e}')
 
     await message.answer('<b>Настройка закончена!</b> Теперь можно очистить чат', parse_mode='html')
 

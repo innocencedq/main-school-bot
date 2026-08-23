@@ -9,6 +9,7 @@ from app.database.data import Images, async_session
 from app.database.requests import del_image_from_redis
 from app.components.keyboard import adm_back, confirm_day
 from app.components.routers.admin import Form
+from app.components.logs.logs import logger
 
 
 router_adm = Router()
@@ -81,7 +82,7 @@ async def change_day(message: Message, state: FSMContext):
                                        [InlineKeyboardButton(text='Отмена', callback_data='adminpanel', style='danger')]
                                    ]))
     except Exception as e:
-        print(e)
+        await logger.error(f'change_day: {e}')
         await message.answer('Что-то пошло не так... Перезайдите в админ панель и попробуйте снова - /adminpanel')
 
 

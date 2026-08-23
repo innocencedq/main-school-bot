@@ -68,8 +68,6 @@ async def loadschedule(method: str = 'firststart'):
 
             for day in week_days:
                 await load_image(img_id=stub_id, img_name=day)
-
-            return 'Successful intializing schedule images!'
         elif method == 'stubsload':
             week_days = ['schedule:1:monday', 'schedule:1:tuesday', 'schedule:1:wednesday', 'schedule:1:thursday', 'schedule:1:friday',
                         'schedule:2:monday', 'schedule:2:tuesday', 'schedule:2:wednesday', 'schedule:2:thursday', 'schedule:2:friday',]
@@ -79,15 +77,14 @@ async def loadschedule(method: str = 'firststart'):
             for day in week_days:
                 await refresh_image(img_id=stub_id, img_name=day)
     except Exception as e:
-        print(e)
-        return 'Failed initializing schedule images! Following initializing only in manual through database'
+        await logger.error(f'loadschedule: {e}')
     
 
 async def unauth_user_trap(user_id, username):
     if not await is_user_exists(user_id):
         await create_user(user_id, username)
 
-        return 'Вы были восстановлены в базе данных, ваши настройки были сброшены поумолчанию!'
+        return 'Вы были восстановлены в базе данных, ваши настройки были сброшены по умолчанию!'
 
 
 async def pagination(items, curr_id):

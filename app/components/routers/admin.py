@@ -13,8 +13,8 @@ from app.database.requests import count_users, check_admin, advert_write_sql, re
     deleting_data_about_advert, refresh_last_advert_id, get_image, add_admin
 from app.components.keyboard import admin_panel, adm_back, adm_rasp, tech_works, confirm_adm, repeat_adm, \
     confirm_schedule, confirm_day, confirm_calls, send_own_message, advert_manage_kb, advert_confirmed, \
-    advert_skip_picture, advert_continue_picture, advert_edit_cancel, advert_editing, advert_continue_edit, adm_update_schedule \
-
+    advert_skip_picture, advert_continue_picture, advert_edit_cancel, advert_editing, advert_continue_edit, adm_update_schedule 
+from app.components.logs.logs import logger
 from app.components.routers.func_admin.keyboard_changer import ScheduleChangerKeyboard
 from app.components.notifyprocesses.notify import notify_update_schedule, technical_works, technical_works_finish, notify_rework_schedule, message_admin, notify_update_calls, \
     new_advert_notify
@@ -230,7 +230,7 @@ async def waiting_admin(message: Message, state: FSMContext):
             await message.answer('Администратор добавлен!', reply_markup=adm_back)
                 
         except Exception as e:
-            print(e)
+            await logger.error(f'waiting_admin: {e}')
             await message.answer('Произошло что-то не так, проверьте chat_id!', reply_markup=adm_back, parse_mode='html')
 
 
@@ -299,7 +299,7 @@ async def waiting_schedule(message: Message, state: FSMContext):
                                          parse_mode='html')
             except Exception as e:
                     await message.answer('Отправьте фотографию еще раз')
-                    print(e)
+                    await logger.error(f'waiting_schedule: {e}')
     except Exception:
             await message.answer('Что-то пошло не так... Перезайдите в админ панель и попробуйте снова - /adminpanel')
 
@@ -334,7 +334,6 @@ async def schedule_update_confirm(callback: CallbackQuery, state: FSMContext):
 #         await state.update_data({'day_file_id': file_id})
 #         await message.answer_photo(photo=message.photo[-1].file_id, caption=f"Подтвердите изменение расписания на {days[day]}", reply_markup=adm_update_selected_schedule)
 #     except Exception as e:
-#         print(e)
 #         await message.answer('Что-то пошло не так... Перезайдите в админ панель и попробуйте снова - /adminpanel')
 
 
@@ -396,14 +395,14 @@ async def title_process(message: Message, state: FSMContext):
             await message.answer('Теперь введите описание\n\n<b>Описание не должно превышать 650-ти символов!!!</b>', parse_mode='html')
             await state.set_state(AdvertManage.description_processing)
     except Exception as e:
-        print(e)
+        await logger.error(f'title_process: {e}')
         await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
         await state.set_state(AdvertManage.title_processing)
 
 
 @router_adm.message(AdvertManage.description_processing)
 async def desc_process(message: Message, state: FSMContext):
-    # try:
+    try:
         ents = message.entities or []
         text = hd.unparse(str(message.text), ents)
         
@@ -418,10 +417,10 @@ async def desc_process(message: Message, state: FSMContext):
                                     caption='Вы можете загрузить свое изображение или пропустить этот шаг. По умолчанию будет загружено изображение, которое прикреплено к сообщению', 
                                     reply_markup=advert_skip_picture)
             await state.set_state(AdvertManage.image_processing)
-    # except Exception as e:
-    #     print(e)
-    #     await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
-    #     await state.set_state(AdvertManage.description_processing)
+    except Exception as e:
+        await logger.error(f'desc_process: {e}')
+        await message.answer('Вы отправили явно не текст... Попробуйте еще раз')
+        await state.set_state(AdvertManage.description_processing)
     
 
 
