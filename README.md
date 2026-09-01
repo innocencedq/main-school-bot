@@ -1,4 +1,69 @@
-# 🚀 Быстрый старт
+# Школьный Telegram бот
+
+Многофункциональный Telegram бот для помощи ученикам, реализованный как индивидуальный проект.
+
+<img width="548" height="748" alt="изображение" src="https://github.com/user-attachments/assets/9bab3434-d45f-4c12-b1e5-e34972caf3b1" />
+
+---
+
+## Возможности
+
+### 📚 Интеграция с дневником КИАСУО
+
+- Ученики, привязавшие дневник, могут просматривать свою успеваемость прямо в боте.
+- Доступна информация об оценках в зависимости от выбранной смены.
+
+| Выбор смены | Просмотр оценок |
+|:---:|:---:|
+| <img width="411" height="232" alt="Выбор смены" src="https://github.com/user-attachments/assets/88a2e71d-414e-41f1-9bbf-0527fea750a5" /> | <img width="309" height="1063" alt="Оценки" src="https://github.com/user-attachments/assets/9c6e4450-411e-40b8-bdbf-ecb3ee1879f5" /> |
+
+---
+
+### 💌 Валентинов день
+
+Полностью реализованная функция отправки валентинок и реакций на них.
+
+| Список полученных валентинок | Реакция на валентинку в виде стикера |
+|:---:|:---:|
+| <img width="553" height="405" alt="Список валентинок" src="https://github.com/user-attachments/assets/8437df78-d7f2-4ceb-97d6-d3d530ef43ee" /> | <img width="448" height="478" alt="изображение" src="https://github.com/user-attachments/assets/da7121bd-255b-46cf-be30-a4089775ada8" /> |
+
+### 📢 Объявления
+
+- Администраторы могут выставлять объявления для учеников.
+- Объявления доступны всегда, пока сам администратор не удалит их.
+
+---
+
+### ⚡ Быстрый старт
+
+- Пользователи, запустившие бота впервые, могут настроить его под себя.
+- Доступные опции: отключение уведомлений, добавление reply-кнопок и другие персональные настройки.
+
+---
+
+### 🌐 Веб-админ-панель
+
+- Администратор может управлять всеми текстами интерфейса и пользователями из базы данных через веб-интерфейс.
+- Большинство функций управляется прямо из бота без необходимости заходить в панель.
+
+| Список пользователей | Список текстов |
+|:---:|:---:|
+| <img width="1919" height="1102" alt="Список пользователей" src="https://github.com/user-attachments/assets/9765f778-0055-4dc5-80b0-6d2a965d7d71" /> | <img width="1919" height="1105" alt="Список текстов" src="https://github.com/user-attachments/assets/937d23c5-f9b2-41df-ae65-eeade5afa704" /> |
+
+| Интерфейс из бота |
+|:---:|
+| <img width="540" height="781" alt="Интерфейс бота" src="https://github.com/user-attachments/assets/79645e18-82f3-40f4-a638-19683b47406b" /> |
+
+---
+
+## Технологии
+
+- **Языки программирования:** Python, JavaScript
+- **Языки разметки:** HTML, CSS, Bootstrap
+- **Библиотеки:** aiogram, aiohttp, uvicorn
+- **СУБД/Базы данных:** SQLite3 (SQLAlchemy), Redis
+
+## 🚀 Быстрый старт
 
 **ВАЖНО:** Данная инструкция написана для **Ubuntu 22.04 LTS**. На других версиях или дистрибутивах Linux команды могут отличаться.
 
@@ -133,40 +198,16 @@ pip install -r requirements.txt
 
 ## ⚙️ Настройка конфигурации
 
-### 11. Создайте файл config.py
+### 11. Создайте файл config.env
 ```bash
 cd main-school-bot
 nano config.py
 ```
 
-### 12. Скопируйте и вставьте следующий код, заменив значения на свои (не забудьте создать бота в BotFather в телеграме):
-```python
-tg_token = 'ТОКЕНТ_ТЕЛЕГРАММ_БОТА'
-vk_token = 'vk1.a.bKyXyYQTgmRDJ3kHl-FX85gXSf4IQqHaIFCDJBAl5EOtQaW2Fso98VZioJ8LLdPkaQwzs0r3HU8GVadtSq1p3SjggmFiizk_FSBktWrgp4cBz8hqgKwHQChbCvodc87K2zUkAX2IYM7IYlwVpBgcO4L8sUCFh2Johjw6HRvJD5ZYbWAFRdBhSjvwU4EjQb-lalnkFmGCb3Pln7iAoRQN7A'
-sqlalchemy_url = 'sqlite+aiosqlite:///./database.db'
-welcome_message = '\nДобро пожаловать в бота "Школьный помощник" школы №3!\nЗдесь ты можешь узнать расписание уроков, важные объявления и многое другое.\n\n<b>Давай сделаем школьную жизнь проще и удобнее!</b>\n\n📄 <b>Расписание экзаменов ОГЭ/ЕГЭ:</b> /oge , /ege'
-bug_report_message = '<b>🛠 Технический раздел</b> \n\nЕсли вы заметили баг или у вас есть идея, опишите ее, создав тикет\n\n<a href="https://t.me/HelperSchool3News">Школьный помощник | Новости</a>'
-DEEPSEEK_API = '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'
-woman_day = 0
-ZAGLUSHKA_FILE_ID = 'AgACAgIAAxkBAAIeNWirWFfkmEgH5lbij6aHzIWNk-DjAALL-DEbC81hSev9FAikN4uWAQADAgADeQADNgQ'
-PATH_TO_IMAGES = 'app/assets/menu/'
-PATH_TO_LOGS = 'app/components/logs/'
-ADMIN_KEY = 'd602355c4067de332bc3ae4de68f206e'
-```
+### 12. Скопируйте и вставьте пример из config.env.example, заменив значения на свои (не забудьте создать бота в BotFather в телеграме и получите токен из ВК):
 
 **Сохраните файл:**  
 Нажмите `Ctrl+X`, затем `Y`, затем `Enter`.
-
-**Расписание экзаменов ОГЭ/ЕГЭ редактируется чезре прямой путь**
-
-*Для редактирование используйте nano (расписание находятся в самом конце)*
-
-```
-cd main-school-bot
-nano app/components/routers/handlers.py
-```
-
-*После сохраните файл, также как написано выше*
 
 ---
 
@@ -193,15 +234,15 @@ pm2 status
 2. Напишите команду: `/start`
 3. Получите права администратора:
    ```
-   /givemeadm d602355c4067de332bc3ae4de68f206e
+   /givemeadm ваш_ключ (по умолчанию -> secret_key)
    ```
 
-### 15. Загрузка изображений интерфейса
+### 15. Загрузите самого бота
 
 ```
-/loadimages
+/autoboot
 ```
-Дождитесь полной загрузки всех изображений.
+Дождитесь полной загрузки.
 
 ---
 
